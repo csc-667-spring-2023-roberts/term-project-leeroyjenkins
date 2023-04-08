@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server.js",
+    "devStart": "nodemon ./server.js",
     "start:dev": "concurrently \"npm:server:dev\" \"npm:build:dev\"",
     "server:dev": "NODE_ENV=development nodemon -e js,pug --watch backend ./server.js",
     "build": "webpack",
@@ -23,11 +24,16 @@
   },
   "homepage": "https://github.com/csc-667-spring-2023-roberts/term-project-leeroyjenkins#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "http-errors": "^2.0.0",
     "morgan": "^1.10.0",
-    "pug": "^3.0.2"
+    "mysql": "^2.18.1",
+    "mysql2": "^3.2.0",
+    "pug": "^3.0.2",
+    "sequelize": "^6.30.0"
   },
   "devDependencies": {
     "babel-loader": "^9.1.2",

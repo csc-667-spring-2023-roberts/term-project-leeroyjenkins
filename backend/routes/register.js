@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../models");
+const { user } = require("../controller");
 
 router.get("/", (req, res) => {
-  res.send("Home");
+  user.register(req, res);
 });
-
-db.sequelize.sync();
 
 module.exports = router;

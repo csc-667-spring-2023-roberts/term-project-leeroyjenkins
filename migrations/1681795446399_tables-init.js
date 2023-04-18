@@ -3,11 +3,13 @@
 exports.shorthands = undefined;
 
 exports.up = pgm => {
+    pgm.createExtension("uuid-ossp")
     pgm.createTable('players',{
         id:{
-            type: 'integer',
+            type: 'uuid',
             primaryKey: true,
-            unique: true
+            unique: true,
+            default: pgm.func("uuid_generate_v4()")
         },
         name:{
             type: 'string',
@@ -25,9 +27,10 @@ exports.up = pgm => {
     });
     pgm.createTable('game_table',{
         id:{
-            type: 'integer',
+            type: 'uuid',
             primaryKey: true,
-            unique: true
+            unique: true,
+            default: pgm.func("uuid_generate_v4()")
         },
         minimum:{
             type:'decimal',
@@ -43,9 +46,10 @@ exports.up = pgm => {
     });
     pgm.createTable('game_status',{
         id:{
-            type:'integer',
+            type: 'uuid',
             primaryKey: true,
-            unique: true
+            unique: true,
+            default: pgm.func("uuid_generate_v4()")
         },
         round:{
             type:'decimal',

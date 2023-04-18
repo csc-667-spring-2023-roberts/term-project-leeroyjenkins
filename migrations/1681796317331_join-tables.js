@@ -5,13 +5,13 @@ exports.shorthands = undefined;
 exports.up = pgm => {
     pgm.createTable('player_table', {
         player_id: {
-            type: 'integer',
+            type: 'uuid',
             notNull: true,
             references: 'players(id)',
             onDelete: 'cascade'
         },
         table_id:{
-            type: 'integer',
+            type: 'uuid',
             notNull: true,
             references: 'game_table(id)',
             onDelete: 'cascade'

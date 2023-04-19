@@ -6,8 +6,12 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const requestTime = require("./backend/middleware/request-time");
 
-
+const session = require('express-session')
+const pgSession = require('connect-pg-simple')(session)
 require("dotenv").config()
+
+const db = require("./backend/db/connection.js")
+const passport = require('passport')
 
 const app = express();
 if (process.env.NODE_ENV === "development") {
@@ -24,6 +28,21 @@ if (process.env.NODE_ENV === "development") {
   
   app.use(connectLiveReload());
 }
+
+const sessionStore = new pgSession({
+  pool: db,
+  tableName: 'sessions'
+})
+
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  cookie: {maxAge: 1000 * 60 * 60 * 4}
+}))
+app.use(passport.initialize())
+app.use(session())
 
 app.use(morgan("dev"));
 app.use(express.json());

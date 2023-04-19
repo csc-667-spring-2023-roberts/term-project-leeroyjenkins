@@ -3,7 +3,7 @@
 exports.shorthands = undefined;
 
 exports.up = pgm => {
-    pgm.createExtension("uuid-ossp")
+    //pgm.createExtension("uuid-ossp")
     pgm.createTable('players',{
         id:{
             type: 'uuid',
@@ -20,9 +20,11 @@ exports.up = pgm => {
             notNull: true,
             unique: true
         },
-        password:{
-            type: 'string',
-            notNull: true
+        hash: {
+            type: 'string'
+        },
+        salt: {
+            type: 'string'
         }
     });
     pgm.createTable('game_table',{

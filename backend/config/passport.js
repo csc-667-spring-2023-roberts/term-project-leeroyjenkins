@@ -12,7 +12,10 @@ passport.use(new localStrategy(function verify(username,password,cb){
             const isValid = validPassword(password, results[0].hash, results[0].salt)
             if(isValid){return cb(null, results[0])}
             else{return cb(null, false)}
-        }).catch((error)=>{cb(error)})
+        }).catch((error)=>{
+            console.log(error)
+            cb(error)
+        })
 }))
 passport.serializeUser(function(user, done){
     done(null, user.id)

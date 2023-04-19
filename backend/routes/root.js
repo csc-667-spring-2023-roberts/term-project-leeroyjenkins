@@ -36,7 +36,7 @@ router.post('/register', (req, res) =>{
   const username = req.body.username;
   const password = req.body.password;
   
-  db.any(`SELECT * FROM players WHERE username = '${username}'`)
+  db.any(`SELECT * FROM players WHERE username = $1`, [username])
     .then((result) => {
       if(result.length === 0){
         const saltHash = genPassword(password)
@@ -44,8 +44,10 @@ router.post('/register', (req, res) =>{
         const hash = saltHash.hash
 
         db.any(`INSERT INTO players(name, username, hash, salt) VALUES
-          (${name}, ${username}, ${salt}, ${hash});
-        `)
+          ($1,$2,$3,$4);`, [name, username, hash, salt])
+        .then(()=>{
+            res.redirect('/login')
+          })
         .catch((error) => {
           res.send('Error saving user in database')
           console.log(error)
@@ -57,6 +59,14 @@ router.post('/register', (req, res) =>{
       res.send('Error looking up users')
       console.log(error)
     })
+})
+
+router.get('/login-failure', (req, res) =>{
+  res.send("Login Fail")
+})
+
+router.get('/login-success', (req, res) =>{
+  res.send('Login Success')
 })
 
 router.get('/testingtesting', (req, res) =>{

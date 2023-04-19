@@ -13,6 +13,7 @@ require("dotenv").config()
 const db = require("./backend/db/connection.js")
 const passport = require('passport')
 
+
 const app = express();
 if (process.env.NODE_ENV === "development") {
   const livereload = require("livereload");
@@ -33,6 +34,19 @@ const sessionStore = new pgSession({
   pool: db,
   tableName: 'sessions'
 })
+// db.none(`CREATE TABLE IF NOT EXISTS sessions (
+//     sid varchar NOT NULL COLLATE "default",
+//     sess json NOT NULL,
+//     expire timestamp(6) NOT NULL
+//   ) WITH (OIDS=FALSE);
+//   ALTER TABLE sessions ADD CONSTRAINT "session_pkey" PRIMARY KEY (sid) NOT DEFERRABLE INITIALLY IMMEDIATE;
+//   CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON sessions ("expire");`)
+//   .then(() => {
+//     console.log('Sessions table created successfully');
+//   })
+//   .catch(error => {
+//     console.log('Error creating sessions table:', error);
+//   });
 
 app.use(session({
   secret: 'secret',
@@ -41,6 +55,7 @@ app.use(session({
   store: sessionStore,
   cookie: {maxAge: 1000 * 60 * 60 * 4}
 }))
+require('./backend/config/passport')
 app.use(passport.initialize())
 app.use(session())
 

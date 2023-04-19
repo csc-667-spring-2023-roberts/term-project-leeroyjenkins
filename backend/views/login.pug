@@ -5,7 +5,7 @@ html
         script(src="/scripts/bundle.js")
     body 
         h1 Log In 
-        for(action='/login', method='post')
+        form(action='/login', method='post')
             label(for='username') Username: 
             input(type='text', id='username', name='username', required)
             br

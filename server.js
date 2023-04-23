@@ -15,33 +15,23 @@ const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
 const db = require("./backend/db/connection.js")
 
-const passport = require('passport')
-require('./backend/config/passport')(passport)
-
-
-const sessionStore = new pgSession({
-  pool: db,
-  pgPromise: db,
-  tableName: 'sessions'
-})
 
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
-app.use(session({
+const sessionMiddleware = session({
+  store: new pgSession({pgPromise: db, tableName: 'sessions'}),
   secret: 'secret',
   resave: false,
   saveUninitialized: false,
-  store: sessionStore,
   cookie: {
     maxAge: 1000 * 60 * 60 * 4
   },
-  rolling: true
-}))
-app.use(passport.initialize())
-app.use(passport.session())
+})
+
+app.use(sessionMiddleware)
 
 
 if (process.env.NODE_ENV === "development") {

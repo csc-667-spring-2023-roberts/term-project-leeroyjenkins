@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db/connection.js")
-const passport = require('passport')
-const genPassword = require('../config/passwordUtil.js').genPassword
-const isAuth = require('./middleware/authorized.js').isAuth
+const players = require('../db/players.js')
+const genPassword = require('../config/passwordUtils.js').genPassword
+const validPassword = require('../config/passwordUtils.js').validPassword
 
 router.get("/", (req, res) => {
   res.redirect('/login')
@@ -17,65 +16,51 @@ router.get('/login', (req, res) => {
   res.render('login')
 })
 
-// router.post('/login', passport.authenticate('local',{
-//   successRedirect: '/home',
-//   failureRedirect: '/login'
-// }))
-router.post('/login', (req,res,next) =>{
-  passport.authenticate('local', (err, user, info) =>{
-    if(err) {
-      console.log(err)
-      return next(err)
-    }
-    if(!user){
-      return res.redirect('/login-failure')
-    }
-    req.logIn(user, (err)=>{
-      if(err){
-        console.log(err)
-        return next(err)
+router.post('/login', async (req, res) =>{
+  const email = req.body.email
+  const pword = req.body.password
+  try{
+    const{id, username, hash, salt} = await players.findByEmail(email)
+    const valid = validPassword(pword, hash, salt)
+    if(valid){
+      req.session.user = {
+        id,
+        username,
+        email,
       }
-      console.log('*LOGIN* req.session: '+req.session)
-      console.log('*LOGIN* req.user.id: ' + req.user.id)
-      console.log('*LOGIN* req.isAuthenticated(): ' + req.isAuthenticated())
-      req.session.save(()=>{
-        res.redirect('/home')
-      })
-    })
-  })(req,res,next)
+      res.redirect('/home')
+    }else{
+      res.send('valid not true')
+    }
+  }catch(err){
+    console.log(err)
+    res.send('error with post/login try catch')
+  }
 })
 
-
-router.post('/register', (req, res) =>{
-  const name = req.body.name;
-  const username = req.body.username;
-  const password = req.body.password;
-  console.log(`name: ${name}, username: ${username}, password: ${password}`)
-  
-  db.any(`SELECT * FROM players WHERE username = $1`, [username])
-    .then((result) => {
-      if(result.length === 0){
-        const saltHash = genPassword(password)
-        const salt = saltHash.salt
-        const hash = saltHash.hash
-
-        db.any(`INSERT INTO players(name, username, hash, salt) VALUES
-          ($1,$2,$3,$4);`, [name, username, hash, salt])
-        .then(()=>{
-            res.redirect('/login')
-          })
-        .catch((error) => {
-          res.send('Error saving user in database')
-          console.log(error)
-        })
-
+router.post('/register', async (req, res) =>{
+  const {username, email, password} = req.body
+  try{
+    const p = await players.findByEmail(email)
+    if(p.length > 0){
+      res.send('email in use')
+    }
+  }catch(error){
+    const saltHash = genPassword(password)
+    const salt = saltHash.salt
+    const hash = saltHash.hash
+    try{
+      const{id} = await players.createPlayer(username, email, hash, salt)
+      req.session.user={
+        id,
+        username,
+        email,
       }
-    })
-    .catch((error) => {
-      res.send('Error looking up users')
-      console.log(error)
-    })
+      res.redirect('/home')
+    }catch(error){
+      console.log('*REGISTER* error: '+error)
+    }
+  }
 })
-
 
 module.exports = router;

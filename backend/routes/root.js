@@ -6,10 +6,7 @@ const genPassword = require('../config/passwordUtil.js').genPassword
 const isAuth = require('./middleware/authorized.js').isAuth
 
 router.get("/", (req, res) => {
-  res.render('home', {
-    title: 'Justin Shin',
-    message: 'this is a test'
-  })
+  res.redirect('/login')
 });
 
 router.get('/register', (req, res) => {
@@ -20,21 +17,40 @@ router.get('/login', (req, res) => {
   res.render('login')
 })
 
-router.post('/login', passport.authenticate('local', {
-  failureRedirect: '/login-failure',
-  successRedirect: '/login-success',
-}),(err, req, res, next)=>{
-  console.log(req.body)
-  if(err){
-    console.log(err)
-    next(err)
-  }
+// router.post('/login', passport.authenticate('local',{
+//   successRedirect: '/home',
+//   failureRedirect: '/login'
+// }))
+router.post('/login', (req,res,next) =>{
+  passport.authenticate('local', (err, user, info) =>{
+    if(err) {
+      console.log(err)
+      return next(err)
+    }
+    if(!user){
+      return res.redirect('/login-failure')
+    }
+    req.logIn(user, (err)=>{
+      if(err){
+        console.log(err)
+        return next(err)
+      }
+      console.log('*LOGIN* req.session: '+req.session)
+      console.log('*LOGIN* req.user.id: ' + req.user.id)
+      console.log('*LOGIN* req.isAuthenticated(): ' + req.isAuthenticated())
+      req.session.save(()=>{
+        res.redirect('/home')
+      })
+    })
+  })(req,res,next)
 })
+
 
 router.post('/register', (req, res) =>{
   const name = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
+  console.log(`name: ${name}, username: ${username}, password: ${password}`)
   
   db.any(`SELECT * FROM players WHERE username = $1`, [username])
     .then((result) => {
@@ -61,24 +77,5 @@ router.post('/register', (req, res) =>{
     })
 })
 
-router.get('/login-failure', (req, res) =>{
-  res.send("Login Fail")
-})
-
-router.get('/login-success', (req, res) =>{
-  res.send('Login Success')
-})
-
-router.get('/testingtesting', (req, res) =>{
-  const uname = "JShin"
-  db.any(`SELECT * FROM players WHERE username = '${uname}';`)
-    .then((results) => {
-      res.send(results)
-      console.log(results[0].name)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-})
 
 module.exports = router;

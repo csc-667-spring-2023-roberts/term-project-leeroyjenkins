@@ -1,9 +1,25 @@
-extends layout
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/home.css')
+    script(src="/scripts/homeJS.js")
 
-block content
-  h1= title
-
-  p= message
-  div 
-    form(method="get" action="/register")
-      button(type="submit") send this shit boys!
+  body 
+    form(action='/home/logout', method='post')
+      button(type='submit') Log Out 
+    
+    h1 Game Table
+    table
+      thead
+        tr
+          th Minimum
+          th Maximum
+          th Players
+      tbody
+        each game in games
+          tr(id=game.id, onclick=`handleGameOnClick(event)`)
+            td= game.minimum
+            td= game.maximum
+            td= game.playerCount
+            
+  

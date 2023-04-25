@@ -9,6 +9,7 @@ function handleGameOnClick(event){
         return
     }
     console.log("gameID: " + event.target.parentNode.id + ", Input value: " + inputValue);
-    // const url = '/games/' + gameID
-    // window.location.href = url
+    const url = `/games/${event.target.parentNode.id}?value=${inputValue}`
+    console.log('url: '+url)
+    window.location.href = url
 }

@@ -1,0 +1,455 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: gray;
+}
+
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+.card {
+  --width: 10em;
+  --height: calc(var(--width) * 1.4);
+  --border-radius: calc(var(--width) * 0.05);
+  --padding: calc(var(--width) * 0.17);
+  width: var(--width);
+  height: var(--height);
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: var(--padding);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  position: relative;
+}
+
+[data-suit="heart"].card,
+[data-suit="diamond"].card {
+  color: red;
+  border: 2px solid red;
+}
+
+[data-suit="spade"].card,
+[data-suit="club"].card {
+  color: black;
+  border: 2px solid black;
+}
+
+[data-suit="unknown"].card {
+  background-image: url("../../views/images/unknown.svg");
+  background-position: center;
+  background-size: 120%;
+  border: 2px solid white;
+  padding: 0em;
+}
+
+.pip {
+  grid-row-end: span 2;
+  width: 85%;
+  aspect-ratio: 1/1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+[data-suit="heart"] .pip {
+  background-image: url("../../views/images/heart.svg");
+}
+
+[data-suit="diamond"] .pip {
+  background-image: url("../../views/images/diamond.svg");
+}
+
+[data-suit="spade"] .pip {
+  background-image: url("../../views/images/spade.svg");
+}
+
+[data-suit="club"] .pip {
+  background-image: url("../../views/images/club.svg");
+}
+
+.corner-number {
+  position: absolute;
+  font-size: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  letter-spacing: -0.1em;
+  font-size: 1.5em;
+}
+
+.corner-number.top {
+  top: 0.25em;
+  left: 0.25em;
+}
+
+.corner-number.bottom {
+  bottom: 0.25em;
+  right: 0.25em;
+  transform: rotate(180deg);
+}
+
+.corner-number::after {
+  line-height: 0;
+  display: block;
+  width: 0.5em;
+}
+
+[data-suit="heart"] .corner-number::after {
+  content: url("../../views/images/heart.svg");
+}
+
+[data-suit="diamond"] .corner-number::after {
+  content: url("../../views/images/diamond.svg");
+}
+
+[data-suit="spade"] .corner-number::after {
+  content: url("../../views/images/spade.svg");
+}
+
+[data-suit="club"] .corner-number::after {
+  content: url("../../views/images/club.svg");
+}
+
+[data-value="J"].card,
+[data-value="Q"].card,
+[data-value="K"].card {
+  grid-template-columns: none;
+  grid-template-rows: none;
+}
+
+[data-value="J"] .pip,
+[data-value="Q"] .pip,
+[data-value="K"] .pip {
+  grid-row-end: unset;
+  width: unset;
+  aspect-ratio: unset;
+}
+
+[data-value="J"] .pip {
+  background-image: url("../../views/images/jack.svg");
+}
+
+[data-value="Q"] .pip {
+  background-image: url("../../views/images/queen.svg");
+}
+
+[data-value="K"] .pip {
+  background-image: url("../../views/images/king.svg");
+}
+
+[data-value="A"] .pip {
+  grid-row-end: span 6;
+  grid-column-end: span 3;
+  grid-row-start: 3;
+  grid-column-start: 1;
+}
+
+/* Cards for 2 */
+[data-value="2"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 2;
+}
+
+[data-value="2"] .pip:nth-child(2) {
+  grid-row-start: 7;
+  grid-column-start: 2;
+  transform: rotate(180deg);
+}
+
+/* Cards for 3 */
+[data-value="3"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 2;
+}
+
+[data-value="3"] .pip:nth-child(2) {
+  grid-row-start: 4;
+  grid-column-start: 2;
+}
+
+[data-value="3"] .pip:nth-child(3) {
+  grid-row-start: 7;
+  grid-column-start: 2;
+  transform: rotate(180deg);
+}
+
+/* Cards for 4 */
+[data-value="4"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="4"] .pip:nth-child(2) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="4"] .pip:nth-child(3) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="4"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+/* Cards for 5 */
+[data-value="5"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="5"] .pip:nth-child(2) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="5"] .pip:nth-child(3) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="5"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="5"] .pip:nth-child(5) {
+  grid-row-start: 4;
+  grid-column-start: 2;
+}
+
+/* Cards for 6 */
+[data-value="6"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="6"] .pip:nth-child(2) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="6"] .pip:nth-child(3) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="6"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="6"] .pip:nth-child(5) {
+  grid-row-start: 4;
+  grid-column-start: 1;
+}
+
+[data-value="6"] .pip:nth-child(6) {
+  grid-row-start: 4;
+  grid-column-start: 3;
+}
+
+/* Cards for 7 */
+[data-value="7"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="7"] .pip:nth-child(2) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="7"] .pip:nth-child(3) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="7"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="7"] .pip:nth-child(5) {
+  grid-row-start: 4;
+  grid-column-start: 1;
+}
+
+[data-value="7"] .pip:nth-child(6) {
+  grid-row-start: 4;
+  grid-column-start: 3;
+}
+
+[data-value="7"] .pip:nth-child(7) {
+  grid-row-start: 2;
+  grid-column-start: 2;
+}
+
+/* Cards for 8 */
+[data-value="8"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="8"] .pip:nth-child(2) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="8"] .pip:nth-child(3) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="8"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="8"] .pip:nth-child(5) {
+  grid-row-start: 4;
+  grid-column-start: 1;
+}
+
+[data-value="8"] .pip:nth-child(6) {
+  grid-row-start: 4;
+  grid-column-start: 3;
+}
+
+[data-value="8"] .pip:nth-child(7) {
+  grid-row-start: 2;
+  grid-column-start: 2;
+}
+
+[data-value="8"] .pip:nth-child(8) {
+  grid-row-start: 6;
+  grid-column-start: 2;
+  transform: rotate(180deg);
+}
+
+/* Cards for 9 */
+[data-value="9"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="9"] .pip:nth-child(2) {
+  grid-row-start: 3;
+  grid-column-start: 1;
+}
+
+[data-value="9"] .pip:nth-child(3) {
+  grid-row-start: 5;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="9"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="9"] .pip:nth-child(5) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="9"] .pip:nth-child(6) {
+  grid-row-start: 3;
+  grid-column-start: 3;
+}
+
+[data-value="9"] .pip:nth-child(7) {
+  grid-row-start: 5;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="9"] .pip:nth-child(8) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="9"] .pip:nth-child(9) {
+  grid-row-start: 4;
+  grid-column-start: 2;
+}
+
+/* Cards for 10 */
+[data-value="10"] .pip:first-child {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+[data-value="10"] .pip:nth-child(2) {
+  grid-row-start: 3;
+  grid-column-start: 1;
+}
+
+[data-value="10"] .pip:nth-child(3) {
+  grid-row-start: 5;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="10"] .pip:nth-child(4) {
+  grid-row-start: 7;
+  grid-column-start: 1;
+  transform: rotate(180deg);
+}
+
+[data-value="10"] .pip:nth-child(5) {
+  grid-row-start: 1;
+  grid-column-start: 3;
+}
+
+[data-value="10"] .pip:nth-child(6) {
+  grid-row-start: 3;
+  grid-column-start: 3;
+}
+
+[data-value="10"] .pip:nth-child(7) {
+  grid-row-start: 5;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="10"] .pip:nth-child(8) {
+  grid-row-start: 7;
+  grid-column-start: 3;
+  transform: rotate(180deg);
+}
+
+[data-value="10"] .pip:nth-child(9) {
+  grid-row-start: 2;
+  grid-column-start: 2;
+}
+
+[data-value="10"] .pip:nth-child(10) {
+  grid-row-start: 6;
+  grid-column-start: 2;
+  transform: rotate(180deg);
+}

@@ -56,13 +56,15 @@ app.use(requestTime);
 
 const PORT = process.env.PORT || 3002;
 
+const isAuth = require('./backend/middleware/isAuth')
+
 const rootRoutes = require("./backend/routes/root")
 const homeRoutes = require('./backend/routes/home.js')
 const gamesRoutes = require('./backend/routes/games')
 
 app.use("/", rootRoutes)
-app.use('/home', homeRoutes)
-app.use('/games', gamesRoutes)
+app.use('/home', isAuth, homeRoutes)
+app.use('/games', isAuth, gamesRoutes)
 
 // app.use((request, response, next) => {
 //   next(createError(404));

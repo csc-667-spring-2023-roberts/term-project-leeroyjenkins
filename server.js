@@ -62,10 +62,12 @@ const isAuth = require('./backend/middleware/isAuth')
 const rootRoutes = require("./backend/routes/root")
 const homeRoutes = require('./backend/routes/home.js')
 const gamesRoutes = require('./backend/routes/games')
+const chatRoutes = require('./backend/routes/chat')
 
 app.use("/", rootRoutes)
 app.use('/home', isAuth, homeRoutes)
 app.use('/games', isAuth, gamesRoutes)
+app.use('/chat', chatRoutes)
 
 
 server.listen(PORT, () => {

@@ -16,18 +16,20 @@ socket.on('chat-message-recieved', ({username, message, timestamp}) =>{
     const displayTimestamp = document.createElement('span')
     displayTimestamp.innerText = timestamp
 
-    entry.append([displayName,displayMessage,displayTimestamp])
+    entry.append(displayName,displayMessage,displayTimestamp)
     messageContainer.appendChild(entry)
+    // console.log("*cmr* username: " + username + ", message: " + message)
 })
 
 document.querySelector("input#chatMessage").addEventListener('keydown',(event)=>{
     if(event.keyCode !== 13){
         return
     }
-    console.log('Sending', event.target.value)
+    // console.log('Sending', event.target.value)
     fetch('/chat/0',{
         method:"post",
         headers:{"Content-Type": "application/json"},
         body: JSON.stringify({message: event.target.value}),
     })
 })
+

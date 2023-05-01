@@ -15,7 +15,6 @@ const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
 const db = require("./backend/db/connection.js")
 
-
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}))
@@ -56,8 +55,10 @@ app.use(requestTime);
 
 const PORT = process.env.PORT || 3002;
 
-const isAuth = require('./backend/middleware/isAuth')
+const initSockets = require('./backend/sockets/initialize.js')
+const server = initSockets(app, sessionMiddleware)
 
+const isAuth = require('./backend/middleware/isAuth')
 const rootRoutes = require("./backend/routes/root")
 const homeRoutes = require('./backend/routes/home.js')
 const gamesRoutes = require('./backend/routes/games')
@@ -66,10 +67,11 @@ app.use("/", rootRoutes)
 app.use('/home', isAuth, homeRoutes)
 app.use('/games', isAuth, gamesRoutes)
 
-// app.use((request, response, next) => {
-//   next(createError(404));
-// });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
+});
+
+app.use((request, response, next) => {
+  next(createError(404));
 });

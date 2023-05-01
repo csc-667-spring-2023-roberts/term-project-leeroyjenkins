@@ -9,7 +9,6 @@ router.get('/:gameID', async (req,res)=>{
     const userID = req.session.user.id
     try{
         const check = await player_table.checkPlayerInTable(gameID,userID)
-        console.log('*gameid* check: ' + check + ', type of: ' + typeof(check))
         if(check.length === 0){
             try{
                 await player_table.joinPlayerTable(userID, gameID, value)

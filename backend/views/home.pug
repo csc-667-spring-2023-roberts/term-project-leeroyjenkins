@@ -2,7 +2,8 @@ html
   head
     title= title
     link(rel='stylesheet' href='/stylesheets/home.css')
-    script(src="/scripts/homeJS.js")
+    script(src='scripts/gameTable.js')
+    script(src='scripts/bundle.js', defer)
 
   body 
     form(action='/home/logout', method='post')
@@ -22,4 +23,10 @@ html
             td= game.maximum
             td= game.count
             
+    br
+    div(id = 'chat-container')
+            div(id = 'messages')
+                label
+                    input(id='chatMessage',  name='chat-message',placeholder='Message...')
+        
   

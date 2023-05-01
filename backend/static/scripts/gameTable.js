@@ -1,5 +1,3 @@
-console.log('this is the home')
-
 function handleGameOnClick(event){
     event.preventDefault()
     console.log("gameID: "+ event.target.parentNode.id)

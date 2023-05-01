@@ -1,3 +1,80 @@
 body {
     background-color: rgba(0,0,255,0.1);
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 3rem auto;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#header{
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+    position: relative;
+    border: solid black 1px;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    background-color: black;
+}
+
+#logo-link{
+    text-decoration: none;
+    align-self: center;
+    padding-left: 1rem;
+    font-size: 2rem;
+    color: white;
+}
+
+#logout{
+    padding-right: 1rem;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 90%;
+    transform: translateY(-50%);
+}
+
+#game-rooms{
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    border: solid black 1px;
+    height: 100%;
+}
+
+#lobby-chat-container{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    border: solid black 1px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#lobby-messages{
+    height: 90%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.lobby-message{
+    width: 100%;
+    overflow-wrap: break-word;
+    padding: 1%;
+}
+
+#lobby-chat-input{
+    position: absolute;
+    width: 100%;
+    height: 10%;
+    overflow-wrap: break-word;
+    resize: none;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
 }

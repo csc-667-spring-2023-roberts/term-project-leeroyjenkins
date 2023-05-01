@@ -30,11 +30,11 @@ router.post('/login', async (req, res) =>{
       }
       res.redirect('/home')
     }else{
-      res.send('valid not true')
+      res.render('login', {message: "Incorrect password"})
     }
   }catch(err){
     console.log(err)
-    res.send('error with post/login try catch')
+    res.render('login', {message: "Email does not exist"})
   }
 })
 
@@ -42,8 +42,9 @@ router.post('/register', async (req, res) =>{
   const {username, email, password} = req.body
   try{
     const p = await players.findByEmail(email)
-    if(p.length > 0){
-      res.send('email in use')
+    console.log(p)
+    if(p != null){
+      res.render('register', {message: "Email in use"})
     }
   }catch(error){
     const saltHash = genPassword(password)
@@ -58,7 +59,7 @@ router.post('/register', async (req, res) =>{
       }
       res.redirect('/home')
     }catch(error){
-      console.log('*REGISTER* error: '+error)
+      res.render('register', {message: "Error occurred while registering"})
     }
   }
 })

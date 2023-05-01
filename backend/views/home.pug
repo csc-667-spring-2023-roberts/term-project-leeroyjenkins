@@ -3,23 +3,39 @@ html
     title= title
     link(rel='stylesheet' href='/stylesheets/home.css')
     script(src="/scripts/homeJS.js")
+    script(src="/scripts/bundle.js")
 
   body 
-    form(action='/home/logout', method='post')
-      button(type='submit') Log Out 
-    
-    h1 Game Table
-    table
-      thead
-        tr
-          th Minimum
-          th Maximum
-          th Players
-      tbody
-        each game in games
-          tr(id=game.id, onclick=`handleGameOnClick(event)`)
-            td= game.minimum
-            td= game.maximum
-            td= game.count
+    <div id="header">
+      <a href=/home id="logo-link">Texas Hold'em Poker</a>
+      <div>
+        <form action='/home/logout' method='post'>
+          <button type='submit' id="logout"> Log Out </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="game-rooms">
+      h1 Game Table
+      table
+        thead
+          tr
+            th Minimum
+            th Maximum
+            th Players
+        tbody
+          each game in games
+            tr(id=game.id, onclick=`handleGameOnClick(event)`)
+              td= game.minimum
+              td= game.maximum
+              td= game.count
+    </div>
+
+    <div id="lobby-chat-container">
+      <div id="lobby-messages"></div>
+      <label>
+        <textarea id="lobby-chat-input" name="lobby-chat-message" placeholder="Message..."></textarea>
+      </label>
+    </div>
             
   

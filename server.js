@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require('body-parser')
 const requestTime = require("./backend/middleware/request-time")
+const initSockets = require("./backend/sockets/init.js");
 
 
 const session = require('express-session')
@@ -22,7 +23,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 const sessionMiddleware = session({
-  store: new pgSession({pgPromise: db, tableName: 'sessions'}),
+  store: new pgSession({pgPromise: db}),
   secret: 'secret',
   resave: false,
   saveUninitialized: false,
@@ -31,8 +32,8 @@ const sessionMiddleware = session({
   },
 })
 
-app.use(sessionMiddleware)
-
+app.use(sessionMiddleware);
+const server = initSockets(app, sessionMiddleware);
 
 if (process.env.NODE_ENV === "development") {
   const livereload = require("livereload");
@@ -59,15 +60,17 @@ const PORT = process.env.PORT || 3002;
 const rootRoutes = require("./backend/routes/root")
 const homeRoutes = require('./backend/routes/home.js')
 const gamesRoutes = require('./backend/routes/games')
+const chatRoute = require('./backend/routes/lobbyChat')
 
 app.use("/", rootRoutes)
 app.use('/home', homeRoutes)
 app.use('/games', gamesRoutes)
+app.use('/lobby-chat', chatRoute)
 
 // app.use((request, response, next) => {
 //   next(createError(404));
 // });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });

@@ -23,6 +23,7 @@ router.get('/:gameID', async (req,res)=>{
                         try{
                             await player_table.joinPlayerTable(userID, gameID, count)
                             const message = username + " has joined"
+                            console.log("gameID: "+gameID + ", type: " + typeof(gameID))
                             io.emit(constants.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
                             res.render('game', {
                                 name: name, 

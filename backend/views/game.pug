@@ -11,7 +11,7 @@ block content
     form(action='/home', method='get')
         button(type='submit') games
     br
-    div(id='game-system-container') System
+    div(id=`${gameID}-System`) System
     br
     div(id='players-icon-container') Players
     br
@@ -20,4 +20,5 @@ block content
     div(id='player-cards-container') Player
     br
     div(id='player-actions-container') Actions
-    
+
+    script(src='/scripts/gameSocket.bundle.js', defer)

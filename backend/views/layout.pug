@@ -1,6 +1,13 @@
 html
   head
-    title= title
+    title #{title}
     link(rel='stylesheet' href='/stylesheets/home.css')
+    script(src='scripts/gameTable.js')
+    script(src='scripts/bundle.js', defer)
+
   body
+    header
+      form(action='/', method='get')
+        button(type='submit') Home 
+      br
     block content

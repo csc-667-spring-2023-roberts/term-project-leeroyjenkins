@@ -1,56 +1,49 @@
-html
-  head
-    title= title
-    link(rel='stylesheet' href='/stylesheets/home.css')
-    script(src='scripts/gameTable.js')
-    script(src='scripts/bundle.js', defer)
+extends layout.pug 
 
-  body 
-    form(action='/home/logout', method='post')
-      button(type='submit') Log Out 
-    form(action='/home/createTable', method='get')
-      button(type='submit') Create Table
-    
-    h1 Game Table
-    table
-      thead
-        tr
-          th Name
-          th Minimum
-          th Maximum
-          th Players
-          th Limit
-      tbody
-        each game in games
-          tr(id=game.id, onclick=`handleGameOnClick(event)`)
-            td= game.name
-            td= game.minimum
-            td= game.maximum
-            td= game.count
-            td= game.plimit
-    
-    h1 Personal Games
-    table 
-      thead 
-        tr
-          th Name
-          th Minimum
-          th Maximum
-          th Players
-          th Limit
-      tbody
-        each pgame in pgames
-          tr(id=pgame.id, onclick=`handleGameOnClick(event)`)
-            td= pgame.name
-            td= pgame.minimum
-            td= pgame.maximum
-            td= pgame.count
-            td= pgame.plimit
-            
-    br
-    div(id = 'chat-container')
-            div(id = 'messages')
-                label
-                    input(id='chatMessage',  name='chat-message',placeholder='Message...')
-        
+block content 
+  form(action='/home/logout', method='post')
+    button(type='submit') Log Out 
+  form(action='/home/createTable', method='get')
+    button(type='submit') Create Table
   
+  h1 Game Table
+  table
+    thead
+      tr
+        th Name
+        th Minimum
+        th Maximum
+        th Players
+        th Limit
+    tbody
+      each game in games
+        tr(id=game.id, onclick=`handleGameOnClick(event)`)
+          td= game.name
+          td= game.minimum
+          td= game.maximum
+          td= game.count
+          td= game.plimit
+  
+  h1 Personal Games
+  table 
+    thead 
+      tr
+        th Name
+        th Minimum
+        th Maximum
+        th Players
+        th Limit
+    tbody
+      each pgame in pgames
+        tr(id=pgame.id, onclick=`handleGameOnClick(event)`)
+          td= pgame.name
+          td= pgame.minimum
+          td= pgame.maximum
+          td= pgame.count
+          td= pgame.plimit
+          
+  br
+  div(id = 'chat-container')
+          div(id = 'messages')
+              label
+                  input(id='chatMessage',  name='chat-message',placeholder='Message...')

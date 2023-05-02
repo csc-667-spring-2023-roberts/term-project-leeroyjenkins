@@ -78,13 +78,15 @@ router.post('/:gameID/leave', async (req, res)=>{
     const userID = req.session.user.id
     const{gameID} = req.params
     try{
-        player_table.leaveTable(userID)
+        player_table.leaveTable(userID, gameID)
         try{
             let {name, minimum, maximum, count, players, plimit} = await game_table.getData(gameID)
-            const playerIndex = players.indexOf(req.session.user.username)
-            if(playerIndex !== -1){
+            const player = req.session.user.username
+            var playerIndex = players.indexOf(player)
+            while(playerIndex !== -1){
                 players.splice(playerIndex,1)
                 count -= 1
+                playerIndex = players.indexOf(player)
             }
             try{
                 await game_table.updatePlayers(gameID, count, players)

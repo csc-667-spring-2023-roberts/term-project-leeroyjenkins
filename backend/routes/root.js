@@ -43,23 +43,26 @@ router.post('/register', async (req, res) =>{
   try{
     const p = await players.findByEmail(email)
     if(p.length > 0){
+      //FIX LATER
       res.send('email in use')
+    }else{
+      const saltHash = genPassword(password)
+      const salt = saltHash.salt
+      const hash = saltHash.hash
+      try{
+        const{id} = await players.createPlayer(username, email, hash, salt)
+        req.session.user={
+          id,
+          username,
+          email,
+        }
+        res.redirect('/home')
+      }catch(error){
+        console.log('*REGISTER* error: '+error)
+      }
     }
   }catch(error){
-    const saltHash = genPassword(password)
-    const salt = saltHash.salt
-    const hash = saltHash.hash
-    try{
-      const{id} = await players.createPlayer(username, email, hash, salt)
-      req.session.user={
-        id,
-        username,
-        email,
-      }
-      res.redirect('/home')
-    }catch(error){
-      console.log('*REGISTER* error: '+error)
-    }
+    console.log(error)
   }
 })
 

@@ -1,12 +1,13 @@
 console.log("frontend/index.js")
 
 import io from 'socket.io-client';
+import exports from '../backend/sockets/constants'
 
 const socket = io();
 
 const messageContainer= document.querySelector('#messages')
 
-socket.on('chat-message-recieved', ({username, message, timestamp}) =>{
+socket.on(exports.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>{
     const entry = document.createElement('div');
 
     const displayName = document.createElement('span')
@@ -26,10 +27,13 @@ document.querySelector("input#chatMessage").addEventListener('keydown',(event)=>
         return
     }
     // console.log('Sending', event.target.value)
+    const message = event.target.value;
+    event.target.value = ""
+
     fetch('/chat/0',{
         method:"post",
         headers:{"Content-Type": "application/json"},
-        body: JSON.stringify({message: event.target.value}),
+        body: JSON.stringify({message}),
     })
 })
 

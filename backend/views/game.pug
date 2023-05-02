@@ -3,7 +3,10 @@ html
         title Game 
 
     body 
-        h1 Game 
+        h1 #{name}
+        p seat: #{seat}
+        p minimum: #{min}
+        p maximum: #{max}
 
         form(action=`/games/${gameID}/leave`, method='post')
             button(type='submit') Leave 

@@ -5,7 +5,12 @@ const genPassword = require('../config/passwordUtils.js').genPassword
 const validPassword = require('../config/passwordUtils.js').validPassword
 
 router.get("/", (req, res) => {
-  res.redirect('/login')
+  const {user} = req.session;
+  if(user && user.id){
+    res.redirect('/home')
+  }else{
+    res.redirect('/login')
+  }
 });
 
 router.get('/register', (req, res) => {

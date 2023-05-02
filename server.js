@@ -47,6 +47,7 @@ if (process.env.NODE_ENV === "development") {
   
   app.use(connectLiveReload());
 }
+
 app.use(express.json())
 app.set("views", path.join(__dirname, "backend", "views"));
 app.set("view engine", "pug");

@@ -1,16 +1,26 @@
 html 
     head 
-        title Game 
+        title #{name}
+        script(src='scripts/bundle.js', defer)
 
     body 
-        h1 #{name}
         p seat: #{seat}
         p minimum: #{min}
         p maximum: #{max}
-
+        br
         form(action=`/games/${gameID}/leave`, method='post')
             button(type='submit') Leave 
+        br
         form(action='/home', method='get')
             button(type='submit') games
-
-        
+        br
+        div(id='game-system-container') System
+        br
+        div(id='players-icon-container') Players
+        br
+        div(id='community-cards-container') Community
+        br
+        div(id='player-cards-container') Player
+        br
+        div(id='player-actions-container') Actions
+    

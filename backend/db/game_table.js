@@ -1,7 +1,7 @@
 const db = require('./connection')
 
 const getData = (id) =>
-    db.one(`SELECT name, minimum, maximum, count, players FROM game_table WHERE id = $1;`, id)
+    db.one(`SELECT name, minimum, maximum, count, players, plimit FROM game_table WHERE id = $1;`, id)
 
 const getAllTables = () =>
     db.any(`SELECT * FROM game_table;`)

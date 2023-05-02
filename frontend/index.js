@@ -1,13 +1,13 @@
 console.log("frontend/index.js")
 
 import io from 'socket.io-client';
-import exports from '../backend/sockets/constants'
+import socketCalls from '../backend/sockets/constants'
 
 const socket = io();
 
 const messageContainer= document.querySelector('#messages')
 
-socket.on(exports.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>{
+socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>{
     const entry = document.createElement('div');
 
     const displayName = document.createElement('span')
@@ -37,3 +37,17 @@ document.querySelector("input#chatMessage").addEventListener('keydown',(event)=>
     })
 })
 
+const systemMessageContainer = document.querySelector('#game-system-container')
+socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, table_id, timestamp})=>{
+    const entry = document.createElement('div');
+    
+    const messageSpan = document.createElement('span')
+    messageSpan.innerText = message
+    const tableIdSpan = document.createElement('span')
+    tableIdSpan.innerText = table_id
+    const timeStampSpan = document.createElement('span')
+    timeStampSpan.innerText=timestamp
+
+    entry.append(tableIdSpan, messageSpan, timeStampSpan)
+    systemMessageContainer.appendChild(entry)
+})

@@ -4,7 +4,7 @@ const player_table = require('../db/player_table')
 const game_table = require('../db/game_table')
 const game_status = require('../db/game_status')
 const players = require('../db/players')
-const game = require('../config/myPoker').default
+const game = require('../config/myPoker')
 const socketCalls = require('../sockets/constants')
 
 router.get('/:gameID', async(req, res) =>{
@@ -20,8 +20,15 @@ router.get('/:gameID', async(req, res) =>{
             console.log('*r* :' + JSON.stringify(r))
             const seat = r[0].seat
             try{ //game_status data
-                let{round, pot, community, player_cards, player_chips, players_alive} = await game_status.getStatus(gameID)
+                const g = await game_status.getStatus(gameID)
+                console.log('*THE GAME*\n' + JSON.stringify(g))
+                const community = g[0].community
+                const pot = g[0].pot
+                const hand = g[0].player_cards[seat-1]
+                const chips = g[0].player_chips[seat-1]
+                const players_alive = g[0].players_alive
                 if(community !== undefined){
+                    console.log("Game undefined")
                     res.render('game',{
                         gameID: gameID,
                         seat: seat,
@@ -32,9 +39,11 @@ router.get('/:gameID', async(req, res) =>{
                         players_alive: players_alive,
                         community: community,
                         pot: pot,
-                        hand: player_cards[seat]
+                        chips: chips,
+                        hand: hand
                     })
                 }else{
+                    console.log("Game undefined")
                     res.render('game',{
                         gameID: gameID,
                         seat: seat,
@@ -45,6 +54,7 @@ router.get('/:gameID', async(req, res) =>{
                         players_alive: '',
                         community: '',
                         pot: '',
+                        chips: 0,
                         hand: ''
                     })
                 }

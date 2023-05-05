@@ -23,6 +23,8 @@ block content
     br
     div(id='Hand') Your hand: #{hand}
     br
+    div(id='Chips') Chips at play: #{chips}
+    br
     div(id='Actions') Actions
         if seat == 1 && hand == ''
             form(action = `/games/${gameID}/create`, method='post')

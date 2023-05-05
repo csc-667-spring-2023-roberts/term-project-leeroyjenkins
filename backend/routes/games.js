@@ -3,6 +3,7 @@ const router = express.Router()
 const player_table = require('../db/player_table')
 const game_table = require('../db/game_table')
 const game_status = require('../db/game_status')
+const players = require('../db/players')
 const game = require('../config/myPoker')
 const socketCalls = require('../sockets/constants')
 
@@ -32,6 +33,7 @@ router.get('/:gameID', async(req, res) =>{
                         pot: pot,
                         hand: player_cards[seat]
                     })
+                    io.emit(socketCalls.ACTION_START_GAME, {gameID, seat: 1})
                 }else{
                     res.render('game',{
                         gameID: gameID,
@@ -78,6 +80,7 @@ router.post('/:gameID', async (req,res)=>{
                             console.log("gameID: "+gameID + ", type: " + typeof(gameID))
                             io.emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
                             io.emit(socketCalls.PLAYER_JOINED_RECEIVED,{gameID,username})
+                            res.redirect(`/games/${gameID}`)
                         }catch(error){
                             console.log('*player_table.joinPlayerTable*\n' + error)
                             res.send('*player_table.joinPlayerTable*\n' + error)
@@ -114,6 +117,7 @@ router.post('/:gameID', async (req,res)=>{
 router.post('/:gameID/create', async(req, res)=>{
     const io = req.app.get('io')
     const {gameID} = req.params;
+    const userID = req.session.user.id
     try{ //player count
         let {name, minimum, maximum, count, players, plimit} = await game_table.getData(gameID)
         const playerChips = new Array(count).fill(0)
@@ -124,8 +128,23 @@ router.post('/:gameID/create', async(req, res)=>{
         console.log('*communityCards* : ' + communityCards)
         const playerRanks = gameInfo.getRanks();
         console.log('*playerRanks* : ' + playerRanks)
-        try{
+        try{ //create status
             await game_status.createStatus(gameID, 0, 0, communityCards, playerCards, playerChips, players)
+            try{ //get wallet
+                const wallet = await players.getWallet(userID)
+                const w = wallet[0].wallet
+                try{ //update wallet
+                    const newW = w - (minimum/2)
+                    if(newW < minimum){
+                        res.send('not enough funds')
+                    }
+                    await players.updateWallet(userID, newW)
+                }catch(err){
+                    console.log(err)
+                }
+            }catch(error){
+                console.log(error)
+            }
         }catch(err){
             console.log(err)
         }

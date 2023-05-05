@@ -9,8 +9,8 @@ router.get('/', async(req,res)=>{
     const userID = req.session.user.id
     const username = req.session.user.username
     try{
-        const wallet = players.getWallet(userID);
-        console.log("wallet: "+wallet)
+        const {wallet} = await players.getWallet(userID)
+
         try{
             const results = await game_table.getAllTables()
             try{
@@ -21,7 +21,7 @@ router.get('/', async(req,res)=>{
                 // console.log("*results*: " + JSON.stringify(results))
                 res.render('home', {games: theRest, pgames: filteredResults, wallet: wallet, username: username})
             }catch(err){
-
+                console.log(err)
             }
         }catch(err){
             console.log(err)
@@ -29,8 +29,6 @@ router.get('/', async(req,res)=>{
     }catch(err){
         console.log(err)
     }
-    
-    
 })
 
 router.post('/logout', (req, res) =>{
@@ -44,18 +42,28 @@ router.get('/createTable', (req, res)=>{
     res.render('createTable')
 })
 
-router.post('/createTable', async(req, res)=>{
-    const {name, min, max, plimit} = req.body
+router.post('/createTable', async(req, res, next)=>{
+    const {tname, min, max, plimit} = req.body
+    const userID = req.session.user.id
     try{
-        const t = await game_table.tableNameInUse(name)
+        const t = await game_table.tableNameInUse(tname)
         if(t.length > 0){
             //FIX LATER
             res.send('name in use')
         }else{
             try{
-                const tableID = await game_table.createTable(min, max, name, plimit)
-                console.log("*tableID*: " + JSON.stringify(tableID))
-                res.redirect(`/games/${tableID.id}`)
+                const count = 1;
+                const playerArray = [req.session.user.username]
+                const tableID = await game_table.createTable(min, max, tname, plimit, count, playerArray)
+                try{
+                    console.log("userid: " + userID)
+                    console.log("tableID: " + tableID.id)
+                    await player_table.joinPlayerTable(userID, tableID.id, count)
+                    res.redirect(`/games/${tableID.id}`)
+                }catch(error){
+                    console.log('*player_table.joinPlayerTable*\n' + error)
+                    res.send('*player_table.joinPlayerTable*\n' + error)
+                }
             }catch(err){
                 console.log(err)
             }

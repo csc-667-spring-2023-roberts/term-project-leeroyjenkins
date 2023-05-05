@@ -57,6 +57,10 @@ socket.on(socketCalls.ACTION_START_GAME, ({gameID, seat})=>{
         form.setAttribute('action', `/games/${gameID}/create`)
         form.setAttribute('method', 'post')
 
-        
+        const button = document.createElement('button')
+        button.setAttribute('type', 'submit')
+        button.innerText = 'Small Blind'
+        form.appendChild(button)
+        actionsContainer.appendChild(form)
     }
 })

@@ -12,8 +12,8 @@ const updateData = (id, minimum, maximum, playerCount, players) =>
 const updatePlayers = (id, playerCount, players) =>
     db.none(`UPDATE game_table SET count = $1, players = $2 WHERE id = $3;`,[playerCount,players,id])
 
-const createTable = (minimum, maximum, name, plimit) =>
-    db.one(`INSERT INTO game_table (minimum, maximum, name, plimit) VALUES ($1,$2,$3,$4) RETURNING id;`,[minimum,maximum,name,plimit])
+const createTable = (minimum, maximum, name, plimit, count, playerArray) =>
+    db.one(`INSERT INTO game_table (minimum, maximum, name, plimit, count, players) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id;`,[minimum,maximum,name,plimit, count, playerArray])
 
 const deleteTable = (id) =>
     db.none(`DELETE FROM game_table WHERE id = $1;`,id)

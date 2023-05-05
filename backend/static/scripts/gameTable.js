@@ -13,5 +13,5 @@ function handleGameOnClick(event){
         method: "post",
         headers:{"Content-Type": "application/json"},
     })
-    window.location.href=url
+    // window.location.href=url
 }

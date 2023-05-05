@@ -1,24 +1,28 @@
 extends layout.pug 
 
 block content 
-    p seat: #{seat}
-    p minimum: #{min}
-    p maximum: #{max}
-    br
     form(action=`/games/${gameID}/leave`, method='post')
         button(type='submit') Leave 
     br
     form(action='/home', method='get')
         button(type='submit') games
     br
+    p seat: #{seat} out of : #{plimit}
+    p minimum: #{min}
+    p maximum: #{max}
+    br
     div(id=`${gameID}-System`) System
     br
-    div(id='players-icon-container') Players
+    div(id=`${gameID}-Players-in-game`) Lobby: #{players_in_game}
     br
-    div(id='community-cards-container') Community
+    div(id=`${gameID}-Players-alive`) Players: #{players_alive}
     br
-    div(id='player-cards-container') Player
+    div(id=`${gameID}-Community-cards`) Community: #{community}
     br
-    div(id='player-actions-container') Actions
+    div(id=`${gameID}-Pot`) Pot: #{pot}
+    br
+    div(id=`${gameID}-Player-cards`) Your hand: #{hand}
+    br
+    div(id=`${seat}-${gameID}-Actions`) Actions
 
     script(src='/scripts/gameSocket.bundle.js', defer)

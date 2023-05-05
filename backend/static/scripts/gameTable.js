@@ -9,5 +9,9 @@ function handleGameOnClick(event){
     // console.log("gameID: " + event.target.parentNode.id + ", Input value: " + inputValue);
     // const url = `/games/${event.target.parentNode.id}?value=${inputValue}`
     const url = `/games/${event.target.parentNode.id}`
-    window.location.href = url
+    fetch(url, {
+        method: "post",
+        headers:{"Content-Type": "application/json"},
+    })
+    window.location.href=url
 }

@@ -22,10 +22,12 @@ router.get('/login', (req, res) => {
 })
 
 router.post('/login', async (req, res) =>{
-  const email = req.body.email
+  const emailInput = req.body.email
   const pword = req.body.password
   try{
-    const{id, username, hash, salt} = await players.findByEmail(email)
+    console.log('*login* email: ' + emailInput)
+    const player = await players.findByEmail(emailInput)
+    const {id,username,email,hash,salt} = player[0]
     const valid = validPassword(pword, hash, salt)
     if(valid){
       req.session.user = {

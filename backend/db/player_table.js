@@ -18,6 +18,9 @@ const checkPlayerInTable = (table_id, player_id) =>
 const getPlayersTables = (player_id) =>
     db.any(`SELECT table_id FROM player_table WHERE player_id = $1;`,player_id)
 
+const getSeatInTable = (table_id, player_id) =>
+    db.any(`SELECT seat FROM player_table WHERE table_id = $1 AND player_id = $2;`,[table_id, player_id])
+
 module.exports = {
     joinPlayerTable,
     leaveTable,
@@ -25,4 +28,5 @@ module.exports = {
     getData,
     checkPlayerInTable,
     getPlayersTables,
+    getSeatInTable,
 }

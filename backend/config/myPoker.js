@@ -6,59 +6,37 @@ class cardsInPlay{
     communityHand;
     numPlayers;
     hands;
-    playerHands;
+    playerHands_full;
     allCards;
+    winner;
+    ranks;
     
     constructor(numPlayers){
         this.numPlayers = numPlayers
         this.allCards = new Set()
-        this.playerHands = []
+        this.playerHands_full = []
         this.communityHand = [this.get_card(),this.get_card(),this.get_card(),this.get_card(),this.get_card()]
         for(var i=0; i<numPlayers; i++){
             const hand = [this.get_card(), this.get_card(), ...this.communityHand]
-            this.playerHands.push(hand)
+            this.playerHands_full.push(hand)
         }
-    }
-    dealFlop(){
-        return this.communityHand.slice(0,3);
-    }
-    dealTurn(){
-        return this.communityHand.slice(3,4);
-    }
-    dealRiver(){
-        return this.communityHand.slice(4,5);
-    }
-    getPlayerCards(pIndex){
-        if(this.playerHands[pIndex] === "folded"){
-            return "folded"
-        }else{
-            return this.playerHands[pIndex].slice(0,2)
-        }
-    }
-    fold(pIndex){
-        this.playerHands[pIndex] = "folded";
-    }
-    findWinningHand(){
-        let maxRank = 0
-        const handRanks = this.playerHands.map((element) => {
-            if(element !== "folded"){
-                const handDeets = this.rankHand(element)
-                // console.log(handDeets)
-                if(handDeets["Rank"] >= maxRank){
-                    maxRank = handDeets["Rank"]
-                }
-                return handDeets
-            }
+        this.ranks = this.playerHands_full.map((element)=>{
+            const handDeets = this.rankHand(element)
+            return handDeets["Rank"]
         })
-        var winners = "Winners: "
-        handRanks.forEach((item, index) =>{
-            if(item["Rank"] === maxRank){
-                winners += index;
-            }
-        })
-        return winners
     }
-    
+    getCommunity(){
+        return this.communityHand;
+    }
+    getPlayerCards(){
+        const hands = this.playerHands_full.map((element)=>{
+            return [element[0],element[1]]
+        })
+        return hands;
+    }
+    getRanks(){
+        return this.ranks;
+    }
 
     //helper functions
     get_card(){

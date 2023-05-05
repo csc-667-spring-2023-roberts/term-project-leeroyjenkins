@@ -20,19 +20,18 @@ socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>
     messageContainer.appendChild(entry)
 })
 
-if(document.querySelector("input#chatMessage") !== null){
-    document.querySelector("input#chatMessage").addEventListener('keydown',(event)=>{
-        if(event.keyCode !== 13){
-            return
-        }
-        // console.log('Sending', event.target.value)
-        const message = event.target.value;
-        event.target.value = ""
-    
-        fetch('/chat/0',{
-            method:"post",
-            headers:{"Content-Type": "application/json"},
-            body: JSON.stringify({message}),
-        })
+document.querySelector("input#chatMessage").addEventListener('keydown',(event)=>{
+    if(event.keyCode !== 13){
+        return
+    }
+    // console.log('Sending', event.target.value)
+    const message = event.target.value;
+    event.target.value = ""
+
+    fetch('/chat/0',{
+        method:"post",
+        headers:{"Content-Type": "application/json"},
+        body: JSON.stringify({message}),
     })
-}
+})
+

@@ -11,18 +11,21 @@ block content
     p minimum: #{min}
     p maximum: #{max}
     br
-    div(id=`${gameID}-System`) System
+    div(id='System') System
     br
-    div(id=`${gameID}-Players-in-game`) Lobby: #{players_in_game}
+    div(id='Lobby') Lobby: #{players_in_game}
     br
-    div(id=`${gameID}-Players-alive`) Players: #{players_alive}
+    div(id='Players') Players: #{players_alive}
     br
-    div(id=`${gameID}-Community-cards`) Community: #{community}
+    div(id='Community') Community: #{community}
     br
-    div(id=`${gameID}-Pot`) Pot: #{pot}
+    div(id='Pot') Pot: #{pot}
     br
-    div(id=`${gameID}-Player-cards`) Your hand: #{hand}
+    div(id='Hand') Your hand: #{hand}
     br
-    div(id=`${seat}-${gameID}-Actions`) Actions
+    div(id='Actions') Actions
+        if seat == 1 && hand == ''
+            form(action = `/games/${gameID}/create`, method='post')
+                button(type='submit') Pay Small Blind
 
     script(src='/scripts/gameSocket.bundle.js', defer)

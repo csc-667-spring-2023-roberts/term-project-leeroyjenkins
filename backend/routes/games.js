@@ -4,7 +4,7 @@ const player_table = require('../db/player_table')
 const game_table = require('../db/game_table')
 const game_status = require('../db/game_status')
 const players = require('../db/players')
-const game = require('../config/myPoker')
+const game = require('../config/myPoker').default
 const socketCalls = require('../sockets/constants')
 
 router.get('/:gameID', async(req, res) =>{
@@ -17,6 +17,7 @@ router.get('/:gameID', async(req, res) =>{
         let {name, minimum, maximum, count, players, plimit} = await game_table.getData(gameID)
         try{ //player_table data
             const r = await player_table.getSeatInTable(gameID, userID)
+            console.log('*r* :' + JSON.stringify(r))
             const seat = r[0].seat
             try{ //game_status data
                 let{round, pot, community, player_cards, player_chips, players_alive} = await game_status.getStatus(gameID)
@@ -33,7 +34,6 @@ router.get('/:gameID', async(req, res) =>{
                         pot: pot,
                         hand: player_cards[seat]
                     })
-                    io.emit(socketCalls.ACTION_START_GAME, {gameID, seat: 1})
                 }else{
                     res.render('game',{
                         gameID: gameID,
@@ -77,9 +77,8 @@ router.post('/:gameID', async (req,res)=>{
                         try{
                             await player_table.joinPlayerTable(userID, gameID, count)
                             const message = username + " has joined"
-                            console.log("gameID: "+gameID + ", type: " + typeof(gameID))
-                            io.emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
-                            io.emit(socketCalls.PLAYER_JOINED_RECEIVED,{gameID,username})
+                            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp: Date.now()})
+                            io.to(`game-${gameID}`).emit(socketCalls.PLAYER_JOINED_RECEIVED,{username})
                             res.redirect(`/games/${gameID}`)
                         }catch(error){
                             console.log('*player_table.joinPlayerTable*\n' + error)
@@ -100,13 +99,7 @@ router.post('/:gameID', async (req,res)=>{
             }
             
         }else{
-            try{
-                const {name, minimum, maximum, count, players} = await game_table.getData(gameID)
-                const message = username + " has joined"
-                io.emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
-            }catch(err){
-                console.log(err)
-            }
+            res.redirect(`/games/${gameID}`)
         }
     }catch(error){
         console.log('*player_table.checkPlayerInTable* : \n'+ error)
@@ -131,14 +124,15 @@ router.post('/:gameID/create', async(req, res)=>{
         try{ //create status
             await game_status.createStatus(gameID, 0, 0, communityCards, playerCards, playerChips, players)
             try{ //get wallet
-                const wallet = await players.getWallet(userID)
-                const w = wallet[0].wallet
+                const {wallet} = await players.getWallet(userID)
+                console.log("*Create* wallet: " + wallet)
                 try{ //update wallet
-                    const newW = w - (minimum/2)
+                    const newW = wallet - (minimum/2)
                     if(newW < minimum){
                         res.send('not enough funds')
                     }
                     await players.updateWallet(userID, newW)
+                    console.log("Everything seems good to me!")
                 }catch(err){
                     console.log(err)
                 }
@@ -172,8 +166,8 @@ router.post('/:gameID/leave', async (req, res)=>{
             try{
                 await game_table.updatePlayers(gameID, count, players)
                 const message = req.session.user.username + ' has left'
-                io.emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp:Date.now()})
-                io.emit(socketCalls.PLAYER_LEFT_RECEIVED,{gameID,username})
+                io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp:Date.now()})
+                io.to(`game-${gameID}`).emit(socketCalls.PLAYER_LEFT_RECEIVED,{username})
                 res.redirect('/home')
             }catch(error){
                 console.log('*game_table.updatePlayers* \n'+error)

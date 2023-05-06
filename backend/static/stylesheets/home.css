@@ -3,6 +3,8 @@ body {
     display: grid;
     grid-template-columns: 70% 30%;
     grid-template-rows: 3rem auto;
+    height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;

@@ -10,6 +10,7 @@ socket.emit('join-game', gameID)
 
 // const systemMessageContainer = document.querySelector('#game-system-container')
 socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
+    console.log("system message recieved *2*")
     console.log("socketCalls.SYSTEM_MESSAGE_RECEIVED")
 
     const systemMessageContainer = document.querySelector('#System')
@@ -38,7 +39,7 @@ socket.on(socketCalls.PLAYER_LEFT_RECEIVED, ({username})=>{
     const namesList = names.split(', ')
     const index = namesList.indexOf(username)
     if(index !== -1){
-        namesList.splict(index,1)
+        namesList.splice(index,1)
     }
     playersContainer.innerHTML = namesList.join(', ')
 })

@@ -27,8 +27,9 @@ router.get('/:gameID', async(req, res) =>{
                 const hand = g[0].player_cards[seat-1]
                 const chips = g[0].player_chips[seat-1]
                 const players_alive = g[0].players_alive
+                const player_ranks = g[0].player_ranks
                 if(community !== undefined){
-                    console.log("Game undefined")
+                    console.log("Game defined")
                     res.render('game',{
                         gameID: gameID,
                         seat: seat,
@@ -87,7 +88,7 @@ router.post('/:gameID', async (req,res)=>{
                         try{
                             await player_table.joinPlayerTable(userID, gameID, count)
                             const message = username + " has joined"
-                            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp: Date.now()})
+                            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
                             io.to(`game-${gameID}`).emit(socketCalls.PLAYER_JOINED_RECEIVED,{username})
                             res.redirect(`/games/${gameID}`)
                         }catch(error){
@@ -132,7 +133,7 @@ router.post('/:gameID/create', async(req, res)=>{
         const playerRanks = gameInfo.getRanks();
         console.log('*playerRanks* : ' + playerRanks)
         try{ //create status
-            await game_status.createStatus(gameID, 0, 0, communityCards, playerCards, playerChips, players)
+            await game_status.createStatus(gameID, 0, 0, communityCards, playerCards, playerChips, players, playerRanks)
             try{ //get wallet
                 const {wallet} = await players.getWallet(userID)
                 console.log("*Create* wallet: " + wallet)
@@ -157,6 +158,95 @@ router.post('/:gameID/create', async(req, res)=>{
     }
 })
 
+router.post('/:gameID/bet', async(req, res)=>{
+    const {gameID} = req.params
+    const username = req.session.user.username
+    const userID = req.session.user.id
+    const bet = req.query.bet
+    try{
+        // check if funds exist in players
+        const wallet = await players.getWallet(userID)
+        if(bet < wallet){
+            const w = wallet - bet
+            try{
+                // subtract bet from player in players and update new wallet
+                await players.updateWallet(userID, w)
+                try{
+                    // get status
+                    const g = await game_status.getStatus(gameID)
+                    const chips = g[0].player_chips
+                    const pot = g[0].pot + bet
+                    const alive = g[0].players_alive
+                    const x = alive.indexOf(username)
+                    chips[x] += bet
+                    try{
+                        // add bet to game_status.player_chips and game_status.pot
+                        await game_status.playerBets(gameID, chips, pot)
+                        // check: next player
+                        const recentBet = chips[x]
+                        let index = x+1
+                        while(index !== x){
+                            if(index >= chips.length){
+                                index = 0
+                            }
+                            const currentBet = chips[index]
+                            if(currentBet !== -1 && currentBet < recentBet){
+                                //player needs to call
+                            }
+                            index ++
+                        }
+                        // all players called
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                }catch(err){
+                    console.log(err)
+                }
+            }catch(err){
+                console.log(err)
+            }
+        }else{
+            console.log('insufficient funds')
+        }
+    }catch(err){
+        console.log(err)
+    }
+
+})
+
+const playerFOLDS = async(req, res) =>{
+    const {gameID} = req.params
+    const username = req.session.user.username
+    try{
+        const g = await game_status.getStatus(gameID)
+        if(g){
+            const ranks = g[0].player_ranks
+            const alive = g[0].players_alive
+            const chips = g[0].player_chips
+            const x = alive.indexOf(username)
+            if(x !== -1){
+                alive[x] = 'folded'
+                ranks[x] = 0
+                chips[x] = -1
+            }else{
+                console.log('*playerFOLDS* player not in game')
+            }
+            try{
+                await game_status.playerFolds(gameID, alive, ranks, chips)
+            }catch(err){
+                console.log(err)
+            }
+        }
+    }catch(err){
+        console.log(err)
+    }
+}
+
+router.post('/:gameID/fold', (req,res)=>{
+    playerFOLDS(req,res)
+})
+
 router.post('/:gameID/leave', async (req, res)=>{
     const io=req.app.get('io')
     const userID = req.session.user.id
@@ -175,8 +265,9 @@ router.post('/:gameID/leave', async (req, res)=>{
             }
             try{
                 await game_table.updatePlayers(gameID, count, players)
+                playerFOLDS(req, res)
                 const message = req.session.user.username + ' has left'
-                io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp:Date.now()})
+                io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
                 io.to(`game-${gameID}`).emit(socketCalls.PLAYER_LEFT_RECEIVED,{username})
                 res.redirect('/home')
             }catch(error){

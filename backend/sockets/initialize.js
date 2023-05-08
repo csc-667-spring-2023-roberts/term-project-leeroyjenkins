@@ -12,6 +12,7 @@ const initSockets = (app, sessionMiddleware) =>{
             _socket.join(`game-${gameID}`)
         })
         _socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, gameId, timestamp})=>{
+            console.log("system message recieved *1*")
             io.to(`game-${gameId}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED, {message, timestamp})
         })
         

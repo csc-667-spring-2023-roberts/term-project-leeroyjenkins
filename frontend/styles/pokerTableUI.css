@@ -1,0 +1,38 @@
+.page-container{
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+.page-container div {
+    text-align: center;
+    color: #000000;
+}
+
+.game-area {
+    width: 80%;
+    background-color: #35654d; 
+}
+
+.player-card {
+    position: absolute;
+    border: 2px solid black;
+}
+
+.player-card:nth-child(2) {
+    top: 10px;
+    left: 60%;
+    height: 100px;
+    width: 200px;
+}
+
+.chat-area {
+    width: 20%;
+    background-color: antiquewhite;
+}

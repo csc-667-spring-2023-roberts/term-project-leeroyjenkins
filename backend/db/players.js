@@ -6,13 +6,17 @@ const createPlayer = (username, email, hash, salt) =>
 const findByEmail = (email) =>
     db.any(`SELECT * FROM players WHERE email=$1;`,[email])
 
+const findByID = (id) =>
+    db.any(`SELECT * FROM players WHERE id=$1;`,[id])
+
 const getWallet = (id) =>
     db.one(`SELECT wallet FROM players WHERE id = $1;`, [id])
 
 const updateWallet = (id, wallet) =>
-    db.none(`UPDATE players SET wallet = $1 WHERE player_id = $2;`, [wallet, id])
+    db.none(`UPDATE players SET wallet = $1 WHERE id = $2;`, [wallet, id])
 
 module.exports = {
+    findByID,
     createPlayer,
     findByEmail,
     getWallet,

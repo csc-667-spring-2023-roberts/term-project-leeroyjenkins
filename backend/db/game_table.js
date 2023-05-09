@@ -1,7 +1,7 @@
 const db = require('./connection')
 
 const getData = (id) =>
-    db.one(`SELECT name, minimum, maximum, count, players, plimit FROM game_table WHERE id = $1;`, id)
+    db.one(`SELECT name, minimum, maximum, count, players, plimit, dealer FROM game_table WHERE id = $1;`, id)
 
 const getAllTables = () =>
     db.any(`SELECT * FROM game_table;`)
@@ -21,8 +21,12 @@ const deleteTable = (id) =>
 const tableNameInUse = (name) =>
     db.any(`SELECT name FROM game_table WHERE name = $1;`, name)
 
+const getDealerPlimit = (id) =>
+    db.one(`SELECT dealer, plimit FROM game_table WHERE id = $1;`, id)
+
 module.exports = {
     getData,
+    getDealerPlimit,
     getAllTables,
     updateData,
     updatePlayers,

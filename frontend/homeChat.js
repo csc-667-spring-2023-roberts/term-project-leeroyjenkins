@@ -5,6 +5,7 @@ import socketCalls from '../backend/sockets/constants'
 
 const socket = io();
 
+
 const messageContainer= document.querySelector('#messages')
 socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>{
     const entry = document.createElement('div');

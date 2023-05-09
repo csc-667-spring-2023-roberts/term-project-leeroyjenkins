@@ -8,6 +8,8 @@ block content
         button(type='submit') games
     br
     p seat: #{seat} out of : #{plimit}
+    form(id='seatValue')
+        input(type='hidden', name='seatVal',value=`${seat}`)
     p minimum: #{min}
     p maximum: #{max}
     br
@@ -29,5 +31,7 @@ block content
         if seat == 1 && hand == ''
             form(action = `/games/${gameID}/create`, method='post')
                 button(type='submit') Pay Small Blind
+    
+    button(id='testButton') Test
 
     script(src='/scripts/gameSocket.bundle.js', defer)

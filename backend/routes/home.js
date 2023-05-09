@@ -5,6 +5,7 @@ const game_table = require('../db/game_table.js')
 const player_table = require('../db/player_table.js')
 const players = require('../db/players.js')
 
+
 router.get('/', async(req,res)=>{
     const userID = req.session.user.id
     const username = req.session.user.username

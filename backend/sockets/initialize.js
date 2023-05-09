@@ -8,14 +8,15 @@ const initSockets = (app, sessionMiddleware) =>{
 
     io.engine.use(sessionMiddleware)
     io.on('connection', (_socket) =>{
+        _socket.on('join-seat', (gameID, seat) =>{
+            console.log(`Joined seat: ${seat} gameID: ${gameID}`)
+            _socket.join(`game-${gameID}-${seat}`)
+        })
+        
         _socket.on('join-game', (gameID) =>{
             _socket.join(`game-${gameID}`)
         })
-        _socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, gameId, timestamp})=>{
-            console.log("system message recieved *1*")
-            io.to(`game-${gameId}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED, {message, timestamp})
-        })
-        
+
     })
     app.set('io', io)
     return server

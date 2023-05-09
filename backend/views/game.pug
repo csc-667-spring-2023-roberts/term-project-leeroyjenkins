@@ -29,8 +29,7 @@ block content
     br
     div(id='Actions') Actions
         if seat == 1 && hand == ''
-            form(action = `/games/${gameID}/create`, method='post')
-                button(type='submit') Pay Small Blind
+            button(id='small-blind') Pay Small Blind
     
     button(id='testButton') Test
 

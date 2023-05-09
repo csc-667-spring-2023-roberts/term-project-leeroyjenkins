@@ -18,6 +18,17 @@ document.getElementById('testButton').addEventListener('click',(event)=>{
     })
 })
 
+const smallBlindButton = document.getElementById('small-blind')
+if(smallBlindButton){
+    console.log("WE GOTTA BUTTON!")
+    smallBlindButton.addEventListener('click',()=>{
+        fetch(`/games/${gameID}/create`,{
+            method:"post",
+            headers:{"Content-Type": "application/json"},
+        })
+    })
+}
+
 // const systemMessageContainer = document.querySelector('#game-system-container')
 socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     console.log("system message recieved *2*")
@@ -54,45 +65,78 @@ socket.on(socketCalls.PLAYER_LEFT_RECEIVED, ({username})=>{
 })
 
 // Lights and Cameras 
+socket.on(socketCalls.GAME_DEAL_CARDS, ({cards})=>{
+    const hand = document.getElementById('Hand')
+    const c1 = document.createElement('div')
+    c1.innerHTML = cards[0]
+    const c2 = document.createElement('div')
+    c2.innerHTML = cards[1]
+    hand.appendChild(c1)
+    hand.appendChild(c2)
+})
+
 socket.on(socketCalls.GAME_FLOP, ({cards})=>{
     const community = document.getElementById('Community')
-    community.innerHTML = cards
+    
+    const c1 = document.createElement('div')
+    c1.innerHTML = cards[0]
+
+    const c2 = document.createElement('div')
+    c2.innerHTML = cards[1]
+
+    const c3 = document.createElement('div')
+    c3.innerHTML = cards[2]
+    community.appendChild(c1)
+    community.appendChild(c2)
+    community.appendChild(c3)
 })
 socket.on(socketCalls.GAME_TURN_RIVER, ({card})=>{
     const community = document.getElementById('Community')
-    community.innerHTML = community.innerHTML + card
+    const c = document.createElement('div')
+    c.innerHTML = card
+    community.appendChild(c)
 })
 
 socket.on(socketCalls.ACTION_PLAYERS_TURN,({callAmount, bigBlind})=>{
     console.log("PLAYER_ACTIONS_RECEIVED **")
     const action = document.getElementById('Actions')
 
-    const raiseForm = document.createElement('form')
-    raiseForm.setAttribute('action', `/games/${gameID}/bet`)
-    raiseForm.setAttribute('method','POST')
+    const raiseDiv = document.createElement('div')
 
     const minAmount = document.createElement('label')
-    minAmount.innerHTML = 'Call: ' + callAmount
+    if(bigBlind){
+        minAmount.innerHTML = 'Big Blind, Call: ' + callAmount
+    }else{
+        minAmount.innerHTML = 'Call: ' + callAmount
+    }
 
     const input = document.createElement('input')
     input.setAttribute('type','number')
     input.setAttribute('name','bet')
     input.setAttribute('min', callAmount)
+    input.addEventListener('keydown',(event)=>{
+        if(event.key === 'Enter'){
+            const bet = event.target.value
+            action.innerHTML=''
+            console.log('bet amount:' + bet)
+            fetch(`/games/${gameID}/bet`,{
+                method:"post",
+                headers:{"Content-Type": "application/json"},
+                body: JSON.stringify({bet})
+            })
+        }
+    })
 
-    const raiseButton = document.createElement('button')
-    raiseButton.setAttribute('type', 'submit')
-    raiseButton.innerHTML = 'Bet'
+    raiseDiv.appendChild(minAmount)
+    raiseDiv.appendChild(input)
 
-    raiseForm.appendChild(minAmount)
-    raiseForm.appendChild(input)
-    raiseForm.appendChild(raiseButton)
-
-    action.appendChild(raiseForm)
+    action.appendChild(raiseDiv)
 
     if(!bigBlind && callAmount > 0){
         const foldButton = document.createElement('button')
         foldButton.innerHTML='Fold'
         foldButton.addEventListener('click', ()=>{
+            action.innerHTML=''
             fetch(`/games/${gameID}/fold`,{
                 method:"post",
                 headers:{"Content-Type": "application/json"}

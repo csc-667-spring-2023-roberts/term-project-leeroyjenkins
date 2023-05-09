@@ -1,3 +1,5 @@
+const gameID = window.location.pathname.split('/').pop()
+
 function handleGameOnClick(event){
     event.preventDefault()
     // console.log("gameID: "+ event.target.parentNode.id)

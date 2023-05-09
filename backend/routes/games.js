@@ -26,7 +26,7 @@ router.get('/:gameID', async(req, res) =>{
                 if(g.length !== 0){
                     // console.log("Game defined")
                     let community
-                    const round = g[0].round
+                    const round = parseInt(g[0].round)
                     const pot = g[0].pot
                     let hand
                     const chips = g[0].player_chips[seat-1]
@@ -34,7 +34,7 @@ router.get('/:gameID', async(req, res) =>{
                     const player_ranks = g[0].player_ranks
                     if(round === 0){
                         community = ''
-                        if(!(seat === (dealer)%plimit && chips[seat] < minimum) && !(seat === (dealer)%plimit && chips[seat] < minimum)){
+                        if(!(seat === (dealer)%plimit && chips[seat] < minimum/2) && !(seat === (dealer)%plimit && chips[seat] < minimum)){
                             //if big or small blind hasn't been paid
                             hand = g[0].player_hands[seat-1]
                         }else{
@@ -143,9 +143,11 @@ router.post('/:gameID/create', async(req, res)=>{
     const {gameID} = req.params;
     const userID = req.session.user.id
     try{ //player count
-        let {name, minimum, maximum, count, players, plimit, dealer} = await game_table.getData(gameID)
-        const playerChips = new Array(count).fill(0)
-        const gameInfo = new game(count)
+        const table = await game_table.getData(gameID)
+        // console.log('g: ' + JSON.stringify(g))
+        const playerChips = new Array(table.count).fill(0)
+        playerChips[table.dealer] = table.minimum/2
+        const gameInfo = new game(table.count)
         const playerCards = gameInfo.getPlayerCards();
         console.log('*playerCards* : ' + playerCards)
         const communityCards = gameInfo.getCommunity();
@@ -153,44 +155,50 @@ router.post('/:gameID/create', async(req, res)=>{
         const playerRanks = gameInfo.getRanks();
         console.log('*playerRanks* : ' + playerRanks)
         try{ //create status
-            await game_status.createStatus(gameID, 0, 0, communityCards, playerCards, playerChips, players, playerRanks)
+            await game_status.createStatus(gameID, parseInt(0), parseInt(table.minimum/2), communityCards, playerCards, playerChips, table.players, playerRanks)
             try{ //get wallet
-                const {wallet} = await players.getWallet(userID)
-                console.log("*Create* wallet: " + wallet)
+                const wallet = await players.getWallet(userID)
+                // console.log("*Create* wallet: " + JSON.stringify(wallet))
                 try{ //update wallet
-                    const newW = wallet - (minimum/2)
-                    if(newW < minimum){
+                    const newW = wallet.wallet - (table.minimum/2)
+                    if(newW < table.minimum){
                         res.send('not enough funds')
                     }
                     await players.updateWallet(userID, newW)
-                    io.to(`game-${gameID}-2`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount:minimum, bigBlind: true})
+                    io.to(`game-${gameID}-1`).emit(socketCalls.GAME_DEAL_CARDS,{})
+                    io.to(`game-${gameID}-2`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount:table.minimum, bigBlind: true})
                     res.status(200)
                 }catch(err){
+                    console.log("*Create Game* caught players.updateWallet error")
                     console.log(err)
                 }
             }catch(error){
+                console.log("*Create Game* caught players.getWallet error")
                 console.log(error)
             }
         }catch(err){
+            console.log("*Create Game* caught game_status.createStatus error")
             console.log(err)
         }
     }catch(err){
+        console.log("*Create Game* caught game_table.getData error")
         console.log(err)
     }
 })
 
 router.post('/:gameID/bet', async(req, res)=>{
+    const io=req.app.get('io')
     const {gameID} = req.params
+    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message:"BET MADE", timestamp:Date.now()})
     const username = req.session.user.username
     const userID = req.session.user.id
     const {bet} = req.body
-    console.log("bet: " + bet + typeof(bet))
     try{
         // check if funds exist in players
         const wallet = await players.getWallet(userID)
-        console.log("Wallet: " + wallet.wallet + ', type: ' + typeof(wallet.wallet))
-        if(bet < wallet.wallet){
-            const w = wallet.wallet - bet
+        // console.log("Wallet: " + wallet.wallet + ', type: ' + typeof(wallet.wallet))
+        if(parseInt(bet) < wallet.wallet){
+            const w = wallet.wallet - parseInt(bet)
             try{
                 // subtract bet from player in players and update new wallet
                 await players.updateWallet(userID, w)
@@ -198,66 +206,77 @@ router.post('/:gameID/bet', async(req, res)=>{
                     // get status
                     const g = await game_status.getStatus(gameID)
                     const chips = g[0].player_chips
-                    const pot = g[0].pot + bet
+                    const pot = parseInt(g[0].pot) + parseInt(bet)
                     const alive = g[0].players_alive
                     const x = alive.indexOf(username)
-                    chips[x] += bet
+                    chips[x] += parseInt(bet)
                     try{
                         // add bet to game_status.player_chips and game_status.pot
                         await game_status.playerBets(gameID, chips, pot)
                         res.status(200)
-                        console.log("BET SUCCESS")
                         // check: next player
                         const recentBet = chips[x]
-                        let index = x+1
+                        let index = (x+1)%chips.length
+                        let proceed = true
                         while(index !== x){
-                            if(index >= chips.length){
-                                index = 0
-                            }
                             const currentBet = chips[index]
                             if(currentBet !== -1 && currentBet < recentBet){
-                                io.to(`game-${gameID}-${index+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: recentBet - currentBet, bigBlind: false})
+                                console.log('currentBet: '+ currentBet)
+                                console.log('index: ' + index)
+                                proceed = false
+                                io.to(`game-${gameID}-${index+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: (recentBet - currentBet), bigBlind: false})
                                 res.status(200)
-                                return
+                                break
                             }
-                            index ++
+                            index = (index+1)%chips.length
                         }
                         // all players called
-                        try{
-                            const info = await game_table.getData(gameID)
-                            const nextSeat = (info[0].dealer+1)%info[0].plimit
-                            const round = info[0].round + 1
-                            if(round === 1){
-                                io.to(`game-${gameID}`).emit(socketCalls.GAME_FLOP,{cards: g[0].community.slice(0,3)})
-                                io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
-                                res.status(200)
-                            }else if(round === 2){
-                                io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community[3]})
-                                io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
-                                res.status(200)
-                            }else if(round === 3){
-                                io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community[4]})
-                                io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
-                                res.status(200)
-                            }else if(round === 4){
-                                handleGameEnd(req,res)
+                        if(proceed){
+                            try{
+                                const info = await game_table.getData(gameID)
+                                console.log('info: ' + JSON.stringify(info))
+                                const nextSeat = (info.dealer+1)%info.plimit
+                                console.log("Dealer: " + nextSeat)
+                                const round = parseInt(g[0].round) + 1
+                                console.log("New round: " + round)
+                                await game_status.updateRound(gameID, round)
+                                if(round === 1){
+                                    io.to(`game-${gameID}`).emit(socketCalls.GAME_FLOP,{cards: [g[0].community.slice(1,3),g[0].community.slice(4,6),g[0].community.slice(7,9)]})
+                                    io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
+                                    res.status(200)
+                                }else if(round === 2){
+                                    io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(10,12)})
+                                    io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
+                                    res.status(200)
+                                }else if(round === 3){
+                                    io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(13,15)})
+                                    io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
+                                    res.status(200)
+                                }else if(round === 4){
+                                    handleGameEnd(req,res)
+                                }
+                            }catch(err){
+                                console.log("*Bet* error with game_table.getData()")
+                                console.log(err)
                             }
-                        }catch(err){
-                            console.log(err)
                         }
                     }catch(err){
+                        console.log("*Bet* error with game_status.playerBets()")
                         console.log(err)
                     }
                 }catch(err){
+                    console.log("*Bet* error with game_status.getStatus()")
                     console.log(err)
                 }
             }catch(err){
+                console.log("*Bet* error with players.updateWallet()")
                 console.log(err)
             }
         }else{
             console.log('insufficient funds')
         }
     }catch(err){
+        console.log("*Bet* error with players.getWallet()")
         console.log(err)
     }
 
@@ -372,11 +391,8 @@ router.post('/:gameID/testSocket', (req,res)=>{
     console.log("*games/testSocket*")
     const io=req.app.get('io')
     const {gameID} = req.params
-    const message = "*SEND SYSTEM MESSAGE TEST*"
     const seat = 1
-    //io.to(`game-${gameID}-${seat}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp: Date.now()})
-    io.to(`game-${gameID}-${seat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 10, bigBlind: false})
-    
+    io.to(`game-${gameID}-${seat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 10, bigBlind:false})
     res.status(200)
 })
 

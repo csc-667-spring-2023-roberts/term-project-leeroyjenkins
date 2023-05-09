@@ -24,9 +24,13 @@ const tableNameInUse = (name) =>
 const getDealerPlimit = (id) =>
     db.one(`SELECT dealer, plimit FROM game_table WHERE id = $1;`, id)
 
+const updateDealer = (id, dealer) =>
+    db.none(`UPDATE game_table SET dealer = $1 WHERE id=$2;`,[dealer,id])
+
 module.exports = {
     getData,
     getDealerPlimit,
+    updateDealer,
     getAllTables,
     updateData,
     updatePlayers,

@@ -21,6 +21,9 @@ const playerBets = (id, player_chips, pot) =>
 const updateRound = (id, round) =>
     db.none(`UPDATE game_status SET round = $1 WHERE id = $2;`,[round, id])
 
+const updateChips = (id, chips) =>
+db.none(`UPDATE game_status SET player_chips = $1 WHERE id = $2;`,[chips, id])
+
 module.exports = {
     getStatus,
     updateStatus,
@@ -28,5 +31,6 @@ module.exports = {
     createStatus,
     deleteStatus,
     playerFolds,
+    updateChips,
     playerBets,
 }

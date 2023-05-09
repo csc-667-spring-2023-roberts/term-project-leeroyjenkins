@@ -20,8 +20,9 @@ document.getElementById('testButton').addEventListener('click',(event)=>{
 
 const smallBlindButton = document.getElementById('small-blind')
 if(smallBlindButton){
-    console.log("WE GOTTA BUTTON!")
     smallBlindButton.addEventListener('click',()=>{
+        const actions = document.getElementById('Actions')
+        actions.innerHTML=''
         fetch(`/games/${gameID}/create`,{
             method:"post",
             headers:{"Content-Type": "application/json"},
@@ -65,6 +66,19 @@ socket.on(socketCalls.PLAYER_LEFT_RECEIVED, ({username})=>{
 })
 
 // Lights and Cameras 
+socket.on(socketCalls.ACTION_START_GAME,({})=>{
+    const action = document.getElementById('Actions')
+    const button = document.createElement('button')
+    button.innerHTML = 'Pay Small Blind'
+    button.addEventListener('click',()=>{
+        fetch(`/games/${gameID}/create`,{
+            method:"post",
+            headers:{"Content-Type": "application/json"},
+        })
+    })
+    action.appendChild(button)
+})
+
 socket.on(socketCalls.GAME_DEAL_CARDS, ({cards})=>{
     const hand = document.getElementById('Hand')
     const c1 = document.createElement('div')

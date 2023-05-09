@@ -8,6 +8,7 @@ block content
         button(type='submit') games
     br
     p seat: #{seat} out of : #{plimit}
+    p dealer: #{dealer}
     form(id='seatValue')
         input(type='hidden', name='seatVal',value=`${seat}`)
     p minimum: #{min}
@@ -28,7 +29,7 @@ block content
     div(id='Chips') Chips at play: #{chips}
     br
     div(id='Actions') Actions
-        if seat == 1 && hand == ''
+        if seat == dealer+1 && hand == ''
             button(id='small-blind') Pay Small Blind
     
     button(id='testButton') Test

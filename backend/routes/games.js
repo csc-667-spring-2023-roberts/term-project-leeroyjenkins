@@ -53,6 +53,7 @@ router.get('/:gameID', async(req, res) =>{
                     res.render('game',{
                         gameID: gameID,
                         seat: seat,
+                        dealer: dealer,
                         plimit: plimit,
                         min: minimum,
                         max: maximum,
@@ -68,6 +69,7 @@ router.get('/:gameID', async(req, res) =>{
                     res.render('game',{
                         gameID: gameID,
                         seat: seat,
+                        dealer: dealer,
                         plimit: plimit,
                         min: minimum,
                         max: maximum,
@@ -108,8 +110,8 @@ router.post('/:gameID', async (req,res)=>{
                         try{
                             await player_table.joinPlayerTable(userID, gameID, count)
                             const message = username + " has joined"
-                            // io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
-                            // io.to(`game-${gameID}`).emit(socketCalls.PLAYER_JOINED_RECEIVED,{username})
+                            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
+                            io.to(`game-${gameID}`).emit(socketCalls.PLAYER_JOINED_RECEIVED,{username})
                             res.redirect(`/games/${gameID}`)
                         }catch(error){
                             console.log('*player_table.joinPlayerTable*\n' + error)
@@ -164,9 +166,13 @@ router.post('/:gameID/create', async(req, res)=>{
                     if(newW < table.minimum){
                         res.send('not enough funds')
                     }
+                    const smallBlindSeat = (table.dealer+1)%table.plimit
+                    const bigBlindSeat = (table.dealer+2)%table.plimit
+                    console.log('smallBlindSeat: ' + smallBlindSeat)
+                    console.log('bigBlindSeat: ' + bigBlindSeat)
                     await players.updateWallet(userID, newW)
-                    io.to(`game-${gameID}-1`).emit(socketCalls.GAME_DEAL_CARDS,{})
-                    io.to(`game-${gameID}-2`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount:table.minimum, bigBlind: true})
+                    io.to(`game-${gameID}-${smallBlindSeat}`).emit(socketCalls.GAME_DEAL_CARDS,{cards:playerCards[table.dealer]})
+                    io.to(`game-${gameID}-${bigBlindSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount:table.minimum, bigBlind: true})
                     res.status(200)
                 }catch(err){
                     console.log("*Create Game* caught players.updateWallet error")
@@ -193,6 +199,7 @@ router.post('/:gameID/bet', async(req, res)=>{
     const username = req.session.user.username
     const userID = req.session.user.id
     const {bet} = req.body
+    console.log('bet: ' + bet)
     try{
         // check if funds exist in players
         const wallet = await players.getWallet(userID)
@@ -209,7 +216,11 @@ router.post('/:gameID/bet', async(req, res)=>{
                     const pot = parseInt(g[0].pot) + parseInt(bet)
                     const alive = g[0].players_alive
                     const x = alive.indexOf(username)
-                    chips[x] += parseInt(bet)
+                    if(parseInt(bet) > 0){
+                        chips[x] += parseInt(bet)
+                    }else{
+                        chips[x] = 0
+                    }
                     try{
                         // add bet to game_status.player_chips and game_status.pot
                         await game_status.playerBets(gameID, chips, pot)
@@ -220,20 +231,33 @@ router.post('/:gameID/bet', async(req, res)=>{
                         let proceed = true
                         while(index !== x){
                             const currentBet = chips[index]
-                            if(currentBet !== -1 && currentBet < recentBet){
-                                console.log('currentBet: '+ currentBet)
-                                console.log('index: ' + index)
+                            if((currentBet !== -1 && currentBet < recentBet) || currentBet === -2){
+                                let diff
+                                if(currentBet === -2){
+                                    diff = 0
+                                }else{
+                                    diff = recentBet - currentBet
+                                }
                                 proceed = false
-                                io.to(`game-${gameID}-${index+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: (recentBet - currentBet), bigBlind: false})
+                                io.to(`game-${gameID}-${index+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
                                 res.status(200)
                                 break
                             }
                             index = (index+1)%chips.length
                         }
+                        const info = await game_table.getData(gameID)
+                        const bigBlindIndex = (parseInt(info.dealer)+1)%info.plimit
+                        console.log('gameStats cards: ' + g[0].player_cards[bigBlindIndex])
+                        if(chips[bigBlindIndex] >= info.minimum){
+                            io.to(`game-${gameID}-${bigBlindIndex+1}`).emit(socketCalls.GAME_DEAL_CARDS,{cards: g[0].player_cards[bigBlindIndex]})
+                        }
                         // all players called
                         if(proceed){
                             try{
-                                const info = await game_table.getData(gameID)
+                                for(let i=0; i<chips.length; i++){
+                                    chips[i] = -2
+                                }
+                                await game_status.updateChips(gameID, chips)
                                 console.log('info: ' + JSON.stringify(info))
                                 const nextSeat = (info.dealer+1)%info.plimit
                                 console.log("Dealer: " + nextSeat)
@@ -301,6 +325,9 @@ const handleGameEnd = async(req, res) =>{
                 try{
                     const wallet2 = wallet[0].wallet + status[0].pot
                     await players.updateWallet(pID, wallet2)
+                    const table = await game_table.getDealerPlimit(gameID)
+                    const newDealer = (table.dealer+1)%table.plimit
+                    await game_table.updateDealer(gameID, newDealer)
                     res.status(200)
                 }catch(err){
                     console.log(err)
@@ -370,8 +397,8 @@ router.post('/:gameID/leave', async (req, res)=>{
                 await game_table.updatePlayers(gameID, count, players)
                 playerFOLDS(req, res)
                 const message = req.session.user.username + ' has left'
-                // io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
-                // io.to(`game-${gameID}`).emit(socketCalls.PLAYER_LEFT_RECEIVED,{username})
+                io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
+                io.to(`game-${gameID}`).emit(socketCalls.PLAYER_LEFT_RECEIVED,{username})
                 res.redirect('/home')
             }catch(error){
                 console.log('*game_table.updatePlayers* \n'+error)

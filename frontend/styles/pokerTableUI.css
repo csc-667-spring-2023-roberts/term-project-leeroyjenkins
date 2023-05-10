@@ -1,10 +1,10 @@
-.page-container{
+.page-container {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
-    height: 100vh;
+    height: 100%;
     width: 100%;
     border-top: 2px solid black;
     border-bottom: 2px solid black;
@@ -16,23 +16,116 @@
 }
 
 .game-area {
-    width: 80%;
-    background-color: #35654d; 
+    background-color: #35654d;
+    height: 99vh;
+    width: 80vw;
+    border: 2px solid black;
+    position: relative;
 }
 
 .player-card {
-    position: absolute;
+    display: inline-block;
+    background-color: #808080;
+    opacity: 0.75;
+    border-radius: 15px;
+    width: 5em;
+    height: 3em;
+    padding: 40px;
     border: 2px solid black;
 }
 
-.player-card:nth-child(2) {
-    top: 10px;
-    left: 60%;
-    height: 100px;
-    width: 200px;
+.owner-cards {
+    display: inline-block;
+    background-color: #808080;
+    opacity: 0.75;
+    border-radius: 15px;
+    width: 6em;
+    height: 4em;
+    padding: 40px;
+    border: 2px solid black;
+}
+
+.top-players {
+    margin-top: 2px;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    border: 2px solid black;
+}
+
+.community-board {
+    height: 52%;
+    border: 2px solid black;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.bottom-players {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 2px;
+    border: 2px solid black;
+}
+
+.player-options {
+    display: flex;
+    justify-content: center;
+}
+
+.player-options button{
+    width: 10em;
+}
+
+/*Slider css w3schools*/
+.slidecontainer {
+    width: 25%; /* Width of the outside container */
+  }
+  
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+  
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+  
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+  
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
 }
 
 .chat-area {
-    width: 20%;
     background-color: antiquewhite;
+    width: 20%;
+}
+
+.text-box {
+    display: inline-block;
+    width: 90%;
+    height: 70%;
+    background-color: white;
+    border: 2px solid black;
 }

@@ -7,9 +7,12 @@ const ACTION_PLAYERS_TURN = 'action-players-turn'
 const GAME_FLOP = 'game_flop'
 const GAME_TURN_RIVER = 'game_turn_river'
 const GAME_DEAL_CARDS = 'game_deal_cards'
-
+const UPDATE_POT = 'update_pot'
+const UPDATE_CHIPS = 'update_chips'
 
 module.exports = {
+    UPDATE_POT,
+    UPDATE_CHIPS,
     CHAT_MESSAGE_RECEIVED,
     SYSTEM_MESSAGE_RECEIVED,
     GAME_DEAL_CARDS,

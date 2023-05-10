@@ -5,22 +5,23 @@ block content
         input(type='hidden', name='seatVal',value=`${seat}`)
     form(action=`/games/${gameID}/leave`, method='post')
         button(type='submit') Leave 
-    br
     form(action='/home', method='get')
         button(type='submit') games
-    br
     p seat: #{seat} out of : #{plimit}
+    p chips: #{wallet}
     p dealer: #{dealer}
     p minimum: #{min}
     p maximum: #{max}
-    br
-    div(id='System') System
-    br
-    div(id='Lobby') Lobby: #{lobby}
-    br
-    div(id='Players') Players: #{alive}
-    br
-    div(id='Community') Community
+    h3 Lobby
+    div(id='Lobby')
+        each person in lobby 
+            div(id='lobby')= person
+    h3 Players in game
+    div(id='Players')
+        each person in alive 
+            div(id='alive')= person
+    h3 Community Cards
+    div(id='Community')
         if round == 1
             each card in community.slice(0,3)
                 div(id='Card')= card
@@ -30,17 +31,17 @@ block content
         else if round == 3
             each card in community
                 div(id='Card')= card
-    br
-    div(id='Pot') Pot: #{pot}
-    br
-    div(id='Chips') Chips at play: #{chips}
-    br
-    label Your hand:
+    h3 Pot
+    div(id='Pot') #{pot}
+    h3 Chips
+    div(id='Chips') #{chips}
+    H3 Your hand:
     div(id='Hand')
         each card in hand 
             div(id='Card')= card
     br
-    div(id='Actions') Actions
+    label Actions:
+    div(id='Actions')
         if callAmount != -2
             br
             label Call = #{callAmount}
@@ -51,6 +52,8 @@ block content
         if round == -1 && seat == dealer+1
             button(id='startGame') Start Game 
     
-    button(id='testButton') Test
+    h3 System
+    div(id='System') 
+    //- button(id='testButton') Test
 
     script(src='/scripts/gameSocket.bundle.js', defer)

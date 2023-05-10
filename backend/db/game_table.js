@@ -22,7 +22,7 @@ const tableNameInUse = (name) =>
     db.any(`SELECT name FROM game_table WHERE name = $1;`, name)
 
 const getDealerPlimit = (id) =>
-    db.one(`SELECT dealer, plimit FROM game_table WHERE id = $1;`, id)
+    db.one(`SELECT dealer, plimit, count FROM game_table WHERE id = $1;`, id)
 
 const updateDealer = (id, dealer) =>
     db.none(`UPDATE game_table SET dealer = $1 WHERE id=$2;`,[dealer,id])

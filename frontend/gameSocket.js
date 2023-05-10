@@ -11,12 +11,12 @@ socket.emit('join-seat', gameID, seat)
 socket.emit('join-game', gameID)
 console.log(`Joined seat: ${seat} gameID: ${gameID}`)
 
-document.getElementById('testButton').addEventListener('click',(event)=>{
-    fetch(`/games/${gameID}/testSocket`,{
-        method:"post",
-        headers:{"Content-Type": "application/json"},
-    })
-})
+// document.getElementById('testButton').addEventListener('click',(event)=>{
+//     fetch(`/games/${gameID}/testSocket`,{
+//         method:"post",
+//         headers:{"Content-Type": "application/json"},
+//     })
+// })
 
 const smallBlindButton = document.getElementById('startGame')
 if(smallBlindButton){
@@ -66,13 +66,14 @@ socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     const entry = document.createElement('div');
         
     const messageSpan = document.createElement('span')
-    messageSpan.innerText = "System: " + message + " time: "
+    messageSpan.innerText = "System: " + message 
 
     const timeStampSpan = document.createElement('span')
-    timeStampSpan.innerText=timestamp
+    const date = new Date(timestamp)
+    timeStampSpan.innerText= date
     
     entry.append(messageSpan, timeStampSpan)
-    systemMessageContainer.appendChild(entry)
+    systemMessageContainer.insertBefore(entry, systemMessageContainer.firstChild)
 })
 
 socket.on(socketCalls.PLAYER_JOINED_RECEIVED, ({username})=>{
@@ -96,7 +97,7 @@ socket.on(socketCalls.PLAYER_LEFT_RECEIVED, ({username})=>{
 socket.on(socketCalls.ACTION_START_GAME,({})=>{
     const action = document.getElementById('Actions')
     const button = document.createElement('button')
-    button.innerHTML = 'Pay Small Blind'
+    button.innerHTML = 'Start Game'
     button.addEventListener('click',()=>{
         fetch(`/games/${gameID}/create`,{
             method:"post",
@@ -135,11 +136,22 @@ socket.on(socketCalls.GAME_FLOP, ({cards})=>{
     community.appendChild(c2)
     community.appendChild(c3)
 })
+
 socket.on(socketCalls.GAME_TURN_RIVER, ({card})=>{
     const community = document.getElementById('Community')
     const c = document.createElement('div')
     c.innerHTML = card
     community.appendChild(c)
+})
+
+socket.on(socketCalls.UPDATE_CHIPS, ({chips})=>{
+    const c = document.getElementById('Chips')
+    c.innerHTML = chips
+})
+
+socket.on(socketCalls.UPDATE_POT, ({pot})=>{
+    const p = document.getElementById('Pot')
+    p.innerHTML = pot
 })
 
 socket.on(socketCalls.ACTION_PLAYERS_TURN,({callAmount, bigBlind})=>{

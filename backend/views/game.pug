@@ -1,6 +1,8 @@
 extends layout.pug 
 
 block content 
+    form(id='seatValue')
+        input(type='hidden', name='seatVal',value=`${seat}`)
     form(action=`/games/${gameID}/leave`, method='post')
         button(type='submit') Leave 
     br
@@ -9,28 +11,45 @@ block content
     br
     p seat: #{seat} out of : #{plimit}
     p dealer: #{dealer}
-    form(id='seatValue')
-        input(type='hidden', name='seatVal',value=`${seat}`)
     p minimum: #{min}
     p maximum: #{max}
     br
     div(id='System') System
     br
-    div(id='Lobby') Lobby: #{players_in_game}
+    div(id='Lobby') Lobby: #{lobby}
     br
-    div(id='Players') Players: #{players_alive}
+    div(id='Players') Players: #{alive}
     br
-    div(id='Community') Community: #{community}
+    div(id='Community') Community
+        if round == 1
+            each card in community.slice(0,3)
+                div(id='Card')= card
+        else if round == 2
+            each card in community.slice(0,4)
+                div(id='Card')= card 
+        else if round == 3
+            each card in community
+                div(id='Card')= card
     br
     div(id='Pot') Pot: #{pot}
     br
-    div(id='Hand') Your hand: #{hand}
-    br
     div(id='Chips') Chips at play: #{chips}
     br
+    label Your hand:
+    div(id='Hand')
+        each card in hand 
+            div(id='Card')= card
+    br
     div(id='Actions') Actions
-        if seat == dealer+1 && hand == ''
-            button(id='small-blind') Pay Small Blind
+        if callAmount != -2
+            br
+            label Call = #{callAmount}
+            input(type='number', name='bet', id='betInput', min=callAmount)
+            br
+            if callAmount != 0
+                button(id='foldButton') Fold 
+        if round == -1 && seat == dealer+1
+            button(id='startGame') Start Game 
     
     button(id='testButton') Test
 

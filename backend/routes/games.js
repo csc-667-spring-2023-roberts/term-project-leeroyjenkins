@@ -9,83 +9,104 @@ const socketCalls = require('../sockets/constants')
 
 
 router.get('/:gameID', async(req, res) =>{
-    const io = req.app.get('io')
     const {gameID} = req.params;
     const userID = req.session.user.id
     const username = req.session.user.username
-    
-    try{ //game_table data
-        let {name, minimum, maximum, count, players, plimit, dealer} = await game_table.getData(gameID)
-        try{ //player_table data
-            const r = await player_table.getSeatInTable(gameID, userID)
-            // console.log('*r* :' + JSON.stringify(r))
-            const seat = r[0].seat
-            try{ //game_status data
-                const g = await game_status.getStatus(gameID)
-                // console.log('*THE GAME*\n' + JSON.stringify(g))
-                if(g.length !== 0){
-                    // console.log("Game defined")
-                    let community
-                    const round = parseInt(g[0].round)
-                    const pot = g[0].pot
-                    let hand
-                    const chips = g[0].player_chips[seat-1]
-                    const players_alive = g[0].players_alive
-                    const player_ranks = g[0].player_ranks
-                    if(round === 0){
-                        community = ''
-                        if(!(seat === (dealer)%plimit && chips[seat] < minimum/2) && !(seat === (dealer)%plimit && chips[seat] < minimum)){
-                            //if big or small blind hasn't been paid
-                            hand = g[0].player_hands[seat-1]
-                        }else{
-                            hand = ''
-                        }
-                    }else if(round === 1){
-                        community = g[0].community.slice(0,3)
-                        hand = g[0].player_hands[seat-1]
-                    }else if(round === 2){
-                        community = g[0].community.slice(0,4)
-                        hand = g[0].player_hands[seat-1]
-                    }else if(round === 3){
-                        community = g[0].community
-                        hand = g[0].player_hands[seat-1]
-                    }
-                    res.render('game',{
-                        gameID: gameID,
-                        seat: seat,
-                        dealer: dealer,
-                        plimit: plimit,
-                        min: minimum,
-                        max: maximum,
-                        players_in_game: players,
-                        players_alive: players_alive,
-                        community: community,
-                        pot: pot,
-                        chips: chips,
-                        hand: hand
-                    })
+    try{
+        const playerSeat = await player_table.getSeatInTable(gameID, userID)
+        const tableInfo = await game_table.getData(gameID)
+        
+        const seat = playerSeat[0].seat
+        const min = tableInfo.minimum
+        const max = tableInfo.maximum
+        const lobby = tableInfo.players
+        const tableName = tableInfo.name
+        const plimit = tableInfo.plimit
+        const dealer = tableInfo.dealer
+        
+        const statusInfo = await game_status.getStatus(gameID)
+        let round
+        let pot
+        let community
+        let cards
+        let chips
+        let alive
+        let callAmount
+        
+        if(statusInfo.length > 0){
+            round = parseInt(statusInfo[0].round)
+            console.log('round: ' + round + ', type: ' + typeof(round))
+            pot = statusInfo[0].pot
+            community = [statusInfo[0].community.slice(1,3),statusInfo[0].community.slice(4,6),statusInfo[0].community.slice(7,9),statusInfo[0].community.slice(10,12),statusInfo[0].community.slice(13,15)]
+            // console.log("community: " + JSON.stringify(community) + ", type: " + typeof(community))
+            cards = statusInfo[0].player_cards
+            const hand = cards[seat-1]
+            chips = statusInfo[0].player_chips
+            alive = statusInfo[0].players_alive
+
+            const raise = Math.max(...chips)
+            if(raise === -2){
+                const hotSeat = dealer + 1
+                if(hotSeat === seat){
+                    callAmount = 0
                 }else{
-                    console.log("Game undefined")
-                    res.render('game',{
-                        gameID: gameID,
-                        seat: seat,
-                        dealer: dealer,
-                        plimit: plimit,
-                        min: minimum,
-                        max: maximum,
-                        players_in_game: players,
-                        players_alive: '',
-                        community: '',
-                        pot: '',
-                        chips: 0,
-                        hand: ''
-                    })
+                    callAmount = -2
                 }
-            }catch(err){
-                console.log(err)
+            }else{
+                let hotIndex
+                for(let i=0; i<chips.length; i++){
+                    if(chips[i] === raise){
+                        const nextIndex = (i+1)%chips.length
+                        if(chips[nextIndex] < chips[i]){
+                            hotIndex = nextIndex
+                        }
+                    }
+                }
+                const hotSeat = hotIndex + 1
+                if(hotSeat === seat){
+                    if(raise === 0){
+                        callAmount = 0
+                    }else{
+                        callAmount = raise - chips[hotIndex]
+                    }
+                }else{
+                    callAmount = -2
+                }
             }
-        }catch(err){
-            console.log(err)
+
+            res.render('game',{
+                gameID: gameID,
+                seat: seat,
+                plimit: plimit,
+                dealer: dealer,
+                min: min,
+                max: max,
+                lobby: lobby,
+                alive: alive,
+                community: community,
+                round: round,
+                pot: pot,
+                chips: (chips[seat-1]===-2)? 0 : chips[seat-1],
+                hand: hand,
+                callAmount: callAmount
+            })
+        }else{
+            res.render('game',{
+                gameID: gameID,
+                seat: seat,
+                plimit: plimit,
+                dealer: dealer,
+                min: min,
+                max: max,
+                lobby: lobby,
+                round: -1,
+                alive: alive,
+                community: [],
+                pot: 0,
+                chips: 0,
+                hand: [],
+                callAmount: -2
+            })
         }
     }catch(err){
         console.log(err)
@@ -217,7 +238,11 @@ router.post('/:gameID/bet', async(req, res)=>{
                     const alive = g[0].players_alive
                     const x = alive.indexOf(username)
                     if(parseInt(bet) > 0){
-                        chips[x] += parseInt(bet)
+                        if(chips[x] === -2){
+                            chips[x] += parseInt(bet) + 2
+                        }else{
+                            chips[x] += parseInt(bet)
+                        } 
                     }else{
                         chips[x] = 0
                     }

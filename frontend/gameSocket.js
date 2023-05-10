@@ -18,7 +18,7 @@ document.getElementById('testButton').addEventListener('click',(event)=>{
     })
 })
 
-const smallBlindButton = document.getElementById('small-blind')
+const smallBlindButton = document.getElementById('startGame')
 if(smallBlindButton){
     smallBlindButton.addEventListener('click',()=>{
         const actions = document.getElementById('Actions')
@@ -26,6 +26,33 @@ if(smallBlindButton){
         fetch(`/games/${gameID}/create`,{
             method:"post",
             headers:{"Content-Type": "application/json"},
+        })
+    })
+}
+const betInput = document.getElementById('betInput')
+if(betInput){
+    betInput.addEventListener('keydown',(event)=>{
+        if(event.key === 'Enter'){
+            const action = document.getElementById('Actions')
+            const bet = event.target.value
+            action.innerHTML=''
+            console.log('bet amount:' + bet)
+            fetch(`/games/${gameID}/bet`,{
+                method:"post",
+                headers:{"Content-Type": "application/json"},
+                body: JSON.stringify({bet})
+            })
+        }
+    })
+}
+const foldButton = document.getElementById('foldButton')
+if(foldButton){
+    foldButton.addEventListener('click', ()=>{
+        const action = document.getElementById('Actions')
+        action.innerHTML=''
+        fetch(`/games/${gameID}/fold`,{
+            method:"post",
+            headers:{"Content-Type": "application/json"}
         })
     })
 }
@@ -81,12 +108,16 @@ socket.on(socketCalls.ACTION_START_GAME,({})=>{
 
 socket.on(socketCalls.GAME_DEAL_CARDS, ({cards})=>{
     const hand = document.getElementById('Hand')
-    const c1 = document.createElement('div')
-    c1.innerHTML = cards[0]
-    const c2 = document.createElement('div')
-    c2.innerHTML = cards[1]
-    hand.appendChild(c1)
-    hand.appendChild(c2)
+    if(hand.hasChildNodes()){
+        console.log('cards dealt already')
+    }else{
+        const c1 = document.createElement('div')
+        c1.innerHTML = cards[0]
+        const c2 = document.createElement('div')
+        c2.innerHTML = cards[1]
+        hand.appendChild(c1)
+        hand.appendChild(c2)
+    }
 })
 
 socket.on(socketCalls.GAME_FLOP, ({cards})=>{

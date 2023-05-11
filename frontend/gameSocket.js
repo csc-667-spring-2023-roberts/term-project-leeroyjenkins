@@ -95,10 +95,15 @@ socket.on(socketCalls.PLAYER_LEFT_RECEIVED, ({username})=>{
 
 // Lights and Cameras 
 socket.on(socketCalls.ACTION_START_GAME,({})=>{
+    const community = document.getElementById('Community')
+    community.innerHTML = ''
+    const hand = document.getElementById('Hand')
+    hand.innerHTML = ''
     const action = document.getElementById('Actions')
     const button = document.createElement('button')
     button.innerHTML = 'Start Game'
     button.addEventListener('click',()=>{
+        action.innerHTML=''
         fetch(`/games/${gameID}/create`,{
             method:"post",
             headers:{"Content-Type": "application/json"},

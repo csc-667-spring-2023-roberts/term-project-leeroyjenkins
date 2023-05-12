@@ -1,9 +1,59 @@
-html 
-    head 
-        title Game 
+extends layout.pug 
 
-    body 
-        h1 Game 
+block content 
+    form(id='seatValue')
+        input(type='hidden', name='seatVal',value=`${seat}`)
+    form(action=`/games/${gameID}/leave`, method='post')
+        button(type='submit') Leave 
+    form(action='/home', method='get')
+        button(type='submit') games
+    p seat: #{seat} out of : #{plimit}
+    p chips: #{wallet}
+    p dealer: #{dealer}
+    p minimum: #{min}
+    p maximum: #{max}
+    h3 Lobby
+    div(id='Lobby')
+        each person in lobby 
+            div(id='lobby')= person
+    h3 Players in game
+    div(id='Players')
+        each person in alive 
+            div(id='alive')= person
+    h3 Community Cards
+    div(id='Community')
+        if round == 1
+            each card in community.slice(0,3)
+                div(id='Card')= card
+        else if round == 2
+            each card in community.slice(0,4)
+                div(id='Card')= card 
+        else if round == 3
+            each card in community
+                div(id='Card')= card
+    h3 Pot
+    div(id='Pot') #{pot}
+    h3 Chips
+    div(id='Chips') #{chips}
+    H3 Your hand:
+    div(id='Hand')
+        each card in hand 
+            div(id='Card')= card
+    br
+    label Actions:
+    div(id='Actions')
+        if callAmount != -2
+            br
+            label Call = #{callAmount}
+            input(type='number', name='bet', id='betInput', min=callAmount)
+            br
+            if callAmount != 0
+                button(id='foldButton') Fold 
+        if round == -1 && seat == dealer+1
+            button(id='startGame') Start Game 
+    
+    h3 System
+    div(id='System') 
+    //- button(id='testButton') Test
 
-        form(action=`/games/${gameID}/leave`, method='post')
-            button(type='submit') Leave 
+    script(src='/scripts/gameSocket.bundle.js', defer)

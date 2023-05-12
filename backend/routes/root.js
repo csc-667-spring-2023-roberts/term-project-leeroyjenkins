@@ -5,7 +5,12 @@ const genPassword = require('../config/passwordUtils.js').genPassword
 const validPassword = require('../config/passwordUtils.js').validPassword
 
 router.get("/", (req, res) => {
-  res.redirect('/login')
+  const {user} = req.session;
+  if(user && user.id){
+    res.redirect('/home')
+  }else{
+    res.redirect('/login')
+  }
 });
 
 router.get('/register', (req, res) => {
@@ -17,10 +22,12 @@ router.get('/login', (req, res) => {
 })
 
 router.post('/login', async (req, res) =>{
-  const email = req.body.email
+  const emailInput = req.body.email
   const pword = req.body.password
   try{
-    const{id, username, hash, salt} = await players.findByEmail(email)
+    console.log('*login* email: ' + emailInput)
+    const player = await players.findByEmail(emailInput)
+    const {id,username,email,hash,salt} = player[0]
     const valid = validPassword(pword, hash, salt)
     if(valid){
       req.session.user = {
@@ -42,25 +49,27 @@ router.post('/register', async (req, res) =>{
   const {username, email, password} = req.body
   try{
     const p = await players.findByEmail(email)
-    console.log(p)
-    if(p != null){
-      res.render('register', {message: "Email in use"})
+    if(p.length > 0){
+      //FIX LATER
+      res.send('email in use')
+    }else{
+      const saltHash = genPassword(password)
+      const salt = saltHash.salt
+      const hash = saltHash.hash
+      try{
+        const{id} = await players.createPlayer(username, email, hash, salt)
+        req.session.user={
+          id,
+          username,
+          email,
+        }
+        res.redirect('/home')
+      }catch(error){
+        console.log('*REGISTER* error: '+error)
+      }
     }
   }catch(error){
-    const saltHash = genPassword(password)
-    const salt = saltHash.salt
-    const hash = saltHash.hash
-    try{
-      const{id} = await players.createPlayer(username, email, hash, salt)
-      req.session.user={
-        id,
-        username,
-        email,
-      }
-      res.redirect('/home')
-    }catch(error){
-      res.render('register', {message: "Error occurred while registering"})
-    }
+    console.log(error)
   }
 })
 

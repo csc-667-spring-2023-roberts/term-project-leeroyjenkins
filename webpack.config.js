@@ -1,11 +1,14 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./frontend/index.js",
+  entry: {
+    homeChat: "./frontend/homeChat.js",
+    gameSocket: "./frontend/gameSocket.js",
+  },
   output: {
     path: path.join(__dirname, "backend", "static", "scripts"),
     publicPath: "/backend/static/scripts",
-    filename: "bundle.js",
+    filename: '[name].bundle.js',
   },
   mode: "production",
   module: {
@@ -17,4 +20,7 @@ module.exports = {
       },
     ],
   },
+  resolve:{
+    extensions: ['.js'],
+  }
 };

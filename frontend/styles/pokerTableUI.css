@@ -1,0 +1,91 @@
+.page-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+.page-container div {
+    text-align: center;
+    color: #000000;
+}
+
+.game-area {
+    background-color: #35654d;
+    height: 99vh;
+    width: 80vw;
+    border: 2px solid black;
+    position: relative;
+}
+
+.player-card {
+    display: inline-block;
+    background-color: #808080;
+    opacity: 0.75;
+    border-radius: 15px;
+    width: 5em;
+    height: 3em;
+    padding: 40px;
+    border: 2px solid black;
+}
+
+.owner-cards {
+    display: inline-block;
+    background-color: #808080;
+    opacity: 0.75;
+    border-radius: 15px;
+    width: 6em;
+    height: 4em;
+    padding: 40px;
+    border: 2px solid black;
+}
+
+.top-players {
+    margin-top: 2px;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    border: 2px solid black;
+}
+
+.community-board {
+    height: 52%;
+    border: 2px solid black;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.bottom-players {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 2px;
+    border: 2px solid black;
+}
+
+.player-options {
+    display: flex;
+    justify-content: center;
+}
+
+.player-options button{
+    width: 10em;
+}
+
+.chat-area {
+    background-color: antiquewhite;
+    width: 20%;
+}
+
+.text-box {
+    display: inline-block;
+    width: 90%;
+    height: 70%;
+    background-color: white;
+    border: 2px solid black;
+}

@@ -378,18 +378,26 @@ router.post('/:gameID/leave', async (req, res)=>{
     const io=req.app.get('io')
     const userID = req.session.user.id
     const username = req.session.user.username
-    const{gameID} = req.params
+    const {gameID} = req.params
     try{
         player_table.leaveTable(userID, gameID)
         let {name, minimum, maximum, count, players, plimit, dealer} = await game_table.getData(gameID)
-        const player = req.session.user.username
-        var playerIndex = players.indexOf(player)
+        var playerIndex = players.indexOf(username)
         while(playerIndex !== -1){
             players.splice(playerIndex,1)
             count -= 1
-            playerIndex = players.indexOf(player)
+            playerIndex = players.indexOf(username)
         }
         await game_table.updatePlayers(gameID, count, players)
+        
+        const playerSeat = playerIndex+1
+        const allSeats = await player_table.getAllSeats(gameID)
+        for(let i=0; i<allSeats.length; i++){
+            if(allSeats[i].seat > playerSeat){
+                await player_table.updateSeat(gameID, allSeats[i].player_id, allSeats[i].seat-1)
+            }
+        }
+
         playerFOLDS(req, res)
         const message = req.session.user.username + ' has left'
         io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp: Date.now()})

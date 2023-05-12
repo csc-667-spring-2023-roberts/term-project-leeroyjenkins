@@ -27,8 +27,16 @@ const getPIDFromTableSeat = (table_id, seat) =>
 const getBigBlindID = (table_id, seat) =>
     db.one(`SELECT player_id FROM player_table WHERE table_id = $1 AND seat = $2;`, [table_id,seat])
 
+const getAllSeats = (table_id) =>
+    db.any(`SELECT seat, player_id FROM player_table WHERE table_id = $1;`,table_id)
+
+const updateSeat = (table_id, player_id, seat) =>
+    db.none(`UPDATE player_table SET seat = $1 WHERE table_id = $2 AND player_id = $3;`,[seat,table_id,player_id])
+
 module.exports = {
     joinPlayerTable,
+    getAllSeats,
+    updateSeat,
     getPIDFromTableSeat,
     getBigBlindID,
     leaveTable,

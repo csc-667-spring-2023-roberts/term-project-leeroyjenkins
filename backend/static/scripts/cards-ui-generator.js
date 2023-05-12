@@ -21,7 +21,7 @@ function addCard(count, player) {
 }
 
 function removeCards(count, player) {
-  hand[player - 1].remove();
+  hand[player].remove();
 }
 
 function newPlayer() {

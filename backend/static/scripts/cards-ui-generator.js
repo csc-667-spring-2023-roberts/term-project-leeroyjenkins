@@ -1,15 +1,43 @@
-const display = document.getElementsByClassName("hand");
+const hand = document.getElementsByClassName("hand");
+const display = document.getElementsByClassName("display");
 const cards = document.querySelectorAll(".card");
 
 cards.forEach(addCardElements);
 
-function addcards(count) {
+function addCard(count, player) {
+  for (let i = 0; i < count; i++) {
+    const newCard = document.createElement("div");
+    newCard.classList.add("card");
+    newCard.setAttribute("data-suit", randomPip());
+    newCard.setAttribute("data-value", rng());
+    addCardElements(newCard);
+
+    if (player === "community") {
+      hand[0].appendChild(newCard);
+    } else {
+      hand[player].appendChild(newCard);
+    }
+  }
+}
+
+function removeCards(count, player) {
+  hand[player - 1].remove();
+}
+
+function newPlayer() {
+  let currentPlayer = hand.length;
+  console.log(currentPlayer);
+  const newPlayer = document.createElement("div");
+  newPlayer.classList.add("player_" + currentPlayer.toString());
+
+  newHand(newPlayer);
+  display[0].append(newPlayer);
+}
+
+function newHand(parent) {
   const newHand = document.createElement("div");
-  newHand.classList.add("card");
-  newHand.setAttribute("data-suit", randomPip());
-  newHand.setAttribute("data-value", rng());
-  addCardElements(newHand);
-  display[0].appendChild(newHand);
+  newHand.classList.add("hand");
+  parent.appendChild(newHand);
 }
 
 function rng() {
@@ -37,7 +65,6 @@ function rng() {
 
 function randomPip() {
   let number = Math.floor(Math.random() * 4) + 1;
-  console.log(number);
   let result = "";
   switch (number) {
     case 1:

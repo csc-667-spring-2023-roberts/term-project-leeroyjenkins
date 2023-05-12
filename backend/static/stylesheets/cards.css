@@ -6,16 +6,11 @@
 
 body {
   background-color: gray;
-}
-
-.hand {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
+  /* overflow: hidden; */
 }
 
 .card {
-  --width: 10em;
+  --width: 8em;
   --height: calc(var(--width) * 1.4);
   --border-radius: calc(var(--width) * 0.05);
   --padding: calc(var(--width) * 0.17);
@@ -77,13 +72,12 @@ body {
 
 .corner-number {
   position: absolute;
-  font-size: 2em;
+  font-size: 1.3em;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   letter-spacing: -0.1em;
-  font-size: 1.5em;
 }
 
 .corner-number.top {
@@ -452,4 +446,54 @@ body {
   grid-row-start: 6;
   grid-column-start: 2;
   transform: rotate(180deg);
+}
+
+.display {
+  padding-left: 10%;
+  display: grid;
+  grid-template-columns: repeat(11, calc(100vw / 11));
+  grid-template-rows: repeat(5, calc(90vh / 5));
+}
+
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.player_1 {
+  grid-row: 1;
+  grid-column: 4 / span 2;
+  padding-left: 15%;
+}
+
+.player_2 {
+  grid-row: 2;
+  grid-column: 8 / span 2;
+}
+
+.player_3 {
+  grid-row: 4;
+  grid-column: 8 / span 2;
+}
+
+.player_4 {
+  grid-row: 5;
+  grid-column: 4 / span 2;
+  padding-left: 15%;
+}
+
+.player_5 {
+  grid-row: 4;
+  grid-column: 1 / span 2;
+}
+
+.player_6 {
+  grid-row: 2;
+  grid-column: 1 / span 2;
+}
+
+.community_cards {
+  grid-row: 3;
+  grid-column: 3 / span 4;
+  padding-left: 5%;
 }

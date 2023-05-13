@@ -18,14 +18,18 @@ block content
         th Maximum
         th Players
         th Limit
+        th Join
     tbody
       each game in games
-        tr(id=game.id, onclick=`handleGameOnClick(event)`)
+        tr(id=game.id)
           td= game.name
           td= game.minimum
           td= game.maximum
           td= game.count
           td= game.plimit
+          td
+            form(action=`/games/${game.id}`, method='post')
+              button(type='submit') Join
   
   h1 Personal Games
   table 
@@ -36,14 +40,18 @@ block content
         th Maximum
         th Players
         th Limit
+        th Join
     tbody
       each pgame in pgames
-        tr(id=pgame.id, onclick=`handleGameOnClick(event)`)
+        tr(id=pgame.id)
           td= pgame.name
           td= pgame.minimum
           td= pgame.maximum
           td= pgame.count
           td= pgame.plimit
+          td 
+            form(action=`/games/${pgame.id}`, method='post')
+              button(type='submit') Join
        
   br
   div(id = 'chat-container')

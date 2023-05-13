@@ -57,7 +57,6 @@ if(foldButton){
     })
 }
 
-// const systemMessageContainer = document.querySelector('#game-system-container')
 socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     const systemMessageContainer = document.querySelector('#System')
 
@@ -162,6 +161,8 @@ socket.on(socketCalls.ACTION_PAY_BIG_BLIND,({callAmount, cards})=>{
             const c2 = document.createElement('div')
             c2.setAttribute('id','Card')
             c2.innerHTML=cards[1]
+            hand.appendChild(c1)
+            hand.appendChild(c2)
             
             const bet = event.target.value
             fetch(`/games/${gameID}/bet`,{

@@ -397,42 +397,44 @@ const playerFOLDS = async(req, res) =>{
     io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: `${username} has folded`, timestamp:Date.now()})
     try{
         const g = await game_status.getStatus(gameID)
-        const ranks = g[0].player_ranks
-        const alive = g[0].players_alive
-        const chips = g[0].player_chips
-        const x = alive.indexOf(username)
-        if(x !== -1){
-            alive[x] = 'folded'
-            ranks[x] = 0
-            chips[x] = -1
-        }else{
-            console.log('*playerFOLDS* player not in game')
-        }
-        await game_status.playerFolds(gameID, alive, ranks, chips)
-        
-        io.to(`game-${gameID}`).emit(socketCalls.PLAYER_FOLDS,{username: username})
-
-        let count = 0
-        for(let i=0; i<alive.length; i++){
-            console.log('alive[i]: ' + alive[i] + typeof(alive[i]))
-            if(alive[i] !== 'folded'){
-                count ++
-            }
-        }
-        if(count === 1){
-            handleGameEnd(req,res)
-        }else{
-            const raise = Math.max(...chips)
-            const nextBetIndex = (x+1)%chips.length
-            let diff
-            if(raise === chips[nextBetIndex]){
-                startNewRound(req,res)
-            }else if(chips[nextBetIndex] === -2){
-                diff = raise-chips[nextBetIndex]-2
-                io.to(`game-${gameID}-${nextBetIndex+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
+        if(g.length !== 0){
+            const ranks = g[0].player_ranks
+            const alive = g[0].players_alive
+            const chips = g[0].player_chips
+            const x = alive.indexOf(username)
+            if(x !== -1){
+                alive[x] = 'folded'
+                ranks[x] = 0
+                chips[x] = -1
             }else{
-                diff = raise-chips[nextBetIndex]
-                io.to(`game-${gameID}-${nextBetIndex+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
+                console.log('*playerFOLDS* player not in game')
+            }
+            await game_status.playerFolds(gameID, alive, ranks, chips)
+            
+            io.to(`game-${gameID}`).emit(socketCalls.PLAYER_FOLDS,{username: username})
+
+            let count = 0
+            for(let i=0; i<alive.length; i++){
+                console.log('alive[i]: ' + alive[i] + typeof(alive[i]))
+                if(alive[i] !== 'folded'){
+                    count ++
+                }
+            }
+            if(count === 1){
+                handleGameEnd(req,res)
+            }else{
+                const raise = Math.max(...chips)
+                const nextBetIndex = (x+1)%chips.length
+                let diff
+                if(raise === chips[nextBetIndex]){
+                    startNewRound(req,res)
+                }else if(chips[nextBetIndex] === -2){
+                    diff = raise-chips[nextBetIndex]-2
+                    io.to(`game-${gameID}-${nextBetIndex+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
+                }else{
+                    diff = raise-chips[nextBetIndex]
+                    io.to(`game-${gameID}-${nextBetIndex+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
+                }
             }
         }
 
@@ -454,17 +456,17 @@ router.post('/:gameID/leave', async (req, res)=>{
     try{
         player_table.leaveTable(userID, gameID)
         let {name, minimum, maximum, count, players, plimit, dealer} = await game_table.getData(gameID)
-        var playerIndex = players.indexOf(username)
-        while(playerIndex !== -1){
-            players.splice(playerIndex,1)
-            count -= 1
-            playerIndex = players.indexOf(username)
-        }
+        const playerIndex = players.indexOf(username)
+        players.splice(playerIndex,1)
+        count -= 1
         await game_table.updatePlayers(gameID, count, players)
         
         const playerSeat = playerIndex+1
         const allSeats = await player_table.getAllSeats(gameID)
+        console.log("allSeats: " + JSON.stringify(allSeats))
         for(let i=0; i<allSeats.length; i++){
+            console.log("allSeats[i].seat: "+allSeats[i].seat)
+            console.log("playerSeat: " + playerSeat)
             if(allSeats[i].seat > playerSeat){
                 await player_table.updateSeat(gameID, allSeats[i].player_id, allSeats[i].seat-1)
             }

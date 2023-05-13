@@ -5,6 +5,17 @@ import socketCalls from '../backend/sockets/constants'
 
 const socket = io();
 
+const joinGameButton = document.querySelectorAll('div#JoinGame')
+joinGameButton.forEach(button=>{
+    button.addEventListener('click',(event)=>{
+        console.log("clicked")
+        const url=`/games/${event.target.parentNode.id}`
+        fetch(url,{
+            method: "post",
+            headers:{"Content-Type": "application/json"}
+        })
+    })
+})
 
 const messageContainer= document.querySelector('#messages')
 socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>{

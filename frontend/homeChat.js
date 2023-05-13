@@ -53,6 +53,46 @@ socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>
 
     entry.append(displayName,displayMessage,displayTimestamp)
     messageContainer.appendChild(entry)
+    messageContainer.lastChild.scrollIntoView();
 })
 
 
+socket.on(socketCalls.TABLE_UPDATE,({tableID, min, max, tname, plimit, count})=>{
+  const row = document.createElement('tr')
+  row.setAttribute('id', `${tableID}`)
+
+  const tdMin = document.createElement('td')
+  tdMin.innerHTML = min
+  
+  const tdMax = document.createElement('td')
+  tdMax.innerHTML = max
+  
+  const tdName = document.createElement('td')
+  tdName.innerHTML = tname
+  
+  const tdLimit = document.createElement('td')
+  tdLimit.innerHTML = plimit
+  
+  const tdCount = document.createElement('td')
+  tdCount.innerHTML = count
+  
+  const tdForm = document.createElement('td')
+  const form = document.createElement('form')
+  form.setAttribute('action', `/games/${tableID}`)
+  form.setAttribute('method', 'post')
+  const button = document.createElement('button')
+  button.setAttribute('type','submit')
+  button.innerHTML="Join"
+  form.appendChild(button)
+  tdForm.appendChild(form)
+
+  row.appendChild(tdName)
+  row.appendChild(tdMin)
+  row.appendChild(tdMax)
+  row.appendChild(tdCount)
+  row.appendChild(tdLimit)
+  row.appendChild(tdForm)
+  
+  const toAdd = document.getElementById('GameTableBody')
+  toAdd.appendChild(row)
+})

@@ -141,9 +141,17 @@ router.post('/:gameID', async (req,res)=>{
             if(count < plimit){
                 count += 1
                 players.push(req.session.user.username)
-
+                const seats = await player_table.getAllSeats(gameID)
+                const seatValues = seats.map(s => s.seat)
+                const sortedSeatValues = seatValues.sort((a,b)=> a-b)
+                let vacantSeat = 1;
+                for(let i=0; i<sortedSeatValues.length; i++){
+                    if(sortedSeatValues[i] === vacantSeat){
+                        vacantSeat++
+                    }
+                }
                 await game_table.updatePlayers(gameID,count,players)
-                await player_table.joinPlayerTable(userID, gameID, count)
+                await player_table.joinPlayerTable(userID, gameID, vacantSeat)
                 
                 const message = "System: "+username + " has joined"
                 io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
@@ -461,16 +469,7 @@ router.post('/:gameID/leave', async (req, res)=>{
         count -= 1
         await game_table.updatePlayers(gameID, count, players)
         
-        const playerSeat = playerIndex+1
-        const allSeats = await player_table.getAllSeats(gameID)
-        console.log("allSeats: " + JSON.stringify(allSeats))
-        for(let i=0; i<allSeats.length; i++){
-            console.log("allSeats[i].seat: "+allSeats[i].seat)
-            console.log("playerSeat: " + playerSeat)
-            if(allSeats[i].seat > playerSeat){
-                await player_table.updateSeat(gameID, allSeats[i].player_id, allSeats[i].seat-1)
-            }
-        }
+        
 
         playerFOLDS(req, res)
         const message = "System: "+req.session.user.username + ' has left'

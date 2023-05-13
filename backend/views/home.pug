@@ -29,7 +29,7 @@ html
             th Players
             th Limit
             th Join
-        tbody
+        tbody(id='GameTableBody')
           each game in games
             tr(id=game.id)
               td= game.name

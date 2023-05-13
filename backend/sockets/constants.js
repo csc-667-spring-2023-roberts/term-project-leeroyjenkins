@@ -14,11 +14,13 @@ const PLAYER_FOLDS = 'player_folds'
 const GAME_ENDS_SHOW_CARDS = 'game_ends_show_cards'
 const ACTION_PAY_BIG_BLIND = 'action_pay_big_blind'
 const LOAD_PLAYERS = 'load_players'
+const TABLE_UPDATE = 'table_update'
 
 module.exports = {
     UPDATE_POT,
     ACTION_PAY_BIG_BLIND,
     LOAD_PLAYERS,
+    TABLE_UPDATE,
     GAME_ENDS_SHOW_CARDS,
     REFRESH_GAME,
     PLAYER_FOLDS,

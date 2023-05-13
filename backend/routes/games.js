@@ -36,7 +36,7 @@ router.get('/:gameID', async(req, res) =>{
         
         if(statusInfo.length > 0){
             round = parseInt(statusInfo[0].round)
-            console.log('round: ' + round + ', type: ' + typeof(round))
+            // console.log('round: ' + round + ', type: ' + typeof(round))
             pot = statusInfo[0].pot
             community = [statusInfo[0].community.slice(1,3),statusInfo[0].community.slice(4,6),statusInfo[0].community.slice(7,9),statusInfo[0].community.slice(10,12),statusInfo[0].community.slice(13,15)]
             // console.log("community: " + JSON.stringify(community) + ", type: " + typeof(community))
@@ -44,11 +44,15 @@ router.get('/:gameID', async(req, res) =>{
             const hand = cards[seat-1]
             chips = statusInfo[0].player_chips
             alive = statusInfo[0].players_alive
-            console.log('alive' + alive + ', type: ' + typeof(alive))
+            // console.log('alive' + alive + ', type: ' + typeof(alive))
 
             const raise = Math.max(...chips)
-            if(raise === -2){
-                const hotSeat = dealer + 1
+            if(raise < 0){
+                let hotIndex = dealer
+                while(chips[hotIndex] !== -2){
+                   hotIndex = (hotIndex+1)%chips.length
+                }
+                const hotSeat = hotIndex+1
                 if(hotSeat === seat){
                     callAmount = 0
                 }else{
@@ -58,9 +62,15 @@ router.get('/:gameID', async(req, res) =>{
                 let hotIndex
                 for(let i=0; i<chips.length; i++){
                     if(chips[i] === raise){
-                        const nextIndex = (i+1)%chips.length
+                        let nextIndex = (i+1)%chips.length
+                        while(chips[nextIndex] === -1){
+                            nextIndex = (nextIndex+1)%chips.length
+                            console.log("Next index: " + nextIndex)
+                        }
+
                         if(chips[nextIndex] < chips[i]){
                             hotIndex = nextIndex
+                            console.log('hot index: ' + hotIndex)
                         }
                     }
                 }
@@ -68,6 +78,8 @@ router.get('/:gameID', async(req, res) =>{
                 if(hotSeat === seat){
                     if(raise === 0){
                         callAmount = 0
+                    }else if(chips[hotIndex] === -2){
+                        callAmount = raise 
                     }else{
                         callAmount = raise - chips[hotIndex]
                     }
@@ -89,7 +101,7 @@ router.get('/:gameID', async(req, res) =>{
                 community: community,
                 round: round,
                 pot: pot,
-                chips: (chips[seat-1]===-2)? 0 : chips[seat-1],
+                chips: (chips[seat-1] < 0)? 0 : chips[seat-1],
                 hand: hand,
                 callAmount: callAmount
             })
@@ -133,7 +145,7 @@ router.post('/:gameID', async (req,res)=>{
                 await game_table.updatePlayers(gameID,count,players)
                 await player_table.joinPlayerTable(userID, gameID, count)
                 
-                const message = username + " has joined"
+                const message = "System: "+username + " has joined"
                 io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
                 io.to(`game-${gameID}`).emit(socketCalls.PLAYER_JOINED_RECEIVED,{username})
                 res.redirect(`/games/${gameID}`)
@@ -161,11 +173,11 @@ router.post('/:gameID/create', async(req, res)=>{
         
         const gameInfo = new game(table.count)
         const playerCards = gameInfo.getPlayerCards();
-        console.log('*playerCards* : ' + playerCards)
+        // console.log('*playerCards* : ' + playerCards)
         const communityCards = gameInfo.getCommunity();
-        console.log('*communityCards* : ' + communityCards)
+        // console.log('*communityCards* : ' + communityCards)
         const playerRanks = gameInfo.getRanks();
-        console.log('*playerRanks* : ' + playerRanks)
+        // console.log('*playerRanks* : ' + playerRanks)
        
         await game_status.createStatus(gameID, parseInt(0), parseInt(table.minimum/2), communityCards, playerCards, playerChips, table.players, playerRanks)
         const wallet = await players.getWallet(userID)
@@ -177,13 +189,21 @@ router.post('/:gameID/create', async(req, res)=>{
         const bigBlindIndex = (table.dealer+1)%table.count
         const bigBlindSeat = bigBlindIndex+1
         const smallBlindSeat = (table.dealer+1)
-        console.log('smallBlindSeat: ' + smallBlindSeat)
-        console.log('bigBlindSeat: ' + bigBlindSeat)
+        // console.log('smallBlindSeat: ' + smallBlindSeat)
+        // console.log('bigBlindSeat: ' + bigBlindSeat)
         await players.updateWallet(userID, newW)
         res.status(200).json({message:'Success'})
+        io.to(`game-${gameID}`).emit(socketCalls.REFRESH_GAME,{})
+        io.to(`game-${gameID}`).emit(socketCalls.LOAD_PLAYERS,{players: table.players})
         io.to(`game-${gameID}-${smallBlindSeat}`).emit(socketCalls.UPDATE_CHIPS,{chips: table.minimum/2})
         io.to(`game-${gameID}-${smallBlindSeat}`).emit(socketCalls.GAME_DEAL_CARDS,{cards:playerCards[table.dealer]})
-        io.to(`game-${gameID}-${bigBlindSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount:table.minimum, bigBlind: true})
+        io.to(`game-${gameID}-${bigBlindSeat}`).emit(socketCalls.ACTION_PAY_BIG_BLIND,{callAmount:table.minimum, cards:playerCards[bigBlindIndex]})
+        for(let i=0; i<table.count-2; i++){
+            const pIndex = (bigBlindIndex+1+i)%table.count
+            io.to(`game-${gameID}-${pIndex+1}`).emit(socketCalls.GAME_DEAL_CARDS,{cards:playerCards[pIndex]})
+        }
+
+        
         io.to(`game-${gameID}`).emit(socketCalls.UPDATE_POT,{pot: table.minimum/2})
 
     }catch(err){
@@ -205,8 +225,8 @@ router.post('/:gameID/bet', async(req, res)=>{
     }else{
         message = `${username} calls`
     }
-    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message:`${username} bets $${bet}`, timestamp:Date.now()})
-    console.log('bet: ' + bet)
+    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message:`System: ${username} bets $${bet}`, timestamp:Date.now()})
+    // console.log('bet: ' + bet)
     try{
         // check if funds exist in players
         const wallet = await players.getWallet(userID)
@@ -252,40 +272,9 @@ router.post('/:gameID/bet', async(req, res)=>{
                 }
                 index = (index+1)%chips.length
             }
-            const info = await game_table.getData(gameID)
-            const bigBlindIndex = (parseInt(info.dealer)+1)%info.plimit
-            console.log('gameStats cards: ' + g[0].player_cards[bigBlindIndex])
-            if(chips[bigBlindIndex] >= info.minimum){
-                io.to(`game-${gameID}-${bigBlindIndex+1}`).emit(socketCalls.GAME_DEAL_CARDS,{cards: g[0].player_cards[bigBlindIndex]})
-                res.status(200).json({message:'Success'})
-            }
             // all players called
             if(proceed){
-                for(let i=0; i<chips.length; i++){
-                    chips[i] = -2
-                }
-                await game_status.updateChips(gameID, chips)
-                console.log('info: ' + JSON.stringify(info))
-                const nextSeat = (info.dealer+1)%info.plimit
-                console.log("Dealer: " + nextSeat)
-                const round = parseInt(g[0].round) + 1
-                console.log("New round: " + round)
-                await game_status.updateRound(gameID, round)
-                if(round === 1){
-                    io.to(`game-${gameID}`).emit(socketCalls.GAME_FLOP,{cards: [g[0].community.slice(1,3),g[0].community.slice(4,6),g[0].community.slice(7,9)]})
-                    io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
-                    res.status(200).json({message:'Success'})
-                }else if(round === 2){
-                    io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(10,12)})
-                    io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
-                    res.status(200).json({message:'Success'})
-                }else if(round === 3){
-                    io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(13,15)})
-                    io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
-                    res.status(200).json({message:'Success'})
-                }else if(round === 4){
-                    handleGameEnd(req,res)
-                }
+                startNewRound(req, res)
             }
         }else{
             console.log('insufficient funds')
@@ -295,6 +284,61 @@ router.post('/:gameID/bet', async(req, res)=>{
     }
 
 })
+
+const startNewRound = async(req,res) =>{
+    const io=req.app.get('io')
+    const {gameID} = req.params
+    try{
+        const info = await game_table.getData(gameID)
+        const g = await game_status.getStatus(gameID)
+        const chips = g[0].player_chips
+        // console.log('info: ' + JSON.stringify(info))
+        const nextSeat = (info.dealer+1)%info.plimit
+        // console.log("Dealer: " + nextSeat)
+        const round = parseInt(g[0].round) + 1
+        // console.log("New round: " + round)
+        await game_status.updateRound(gameID, round)
+        if(round === 1){
+            for(let i=0; i<chips.length; i++){
+                if(chips[i] !== -1){
+                    chips[i] = -2
+                }
+            }
+            await game_status.updateChips(gameID, chips)
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: First round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.GAME_FLOP,{cards: [g[0].community.slice(1,3),g[0].community.slice(4,6),g[0].community.slice(7,9)]})
+            io.to(`game-${gameID}-${nextSeat+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
+            res.status(200).json({message:'Success'})
+        }else if(round === 2){
+            for(let i=0; i<chips.length; i++){
+                if(chips[i] !== -1){
+                    chips[i] = -2
+                }
+            }
+            await game_status.updateChips(gameID, chips)
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: Second round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(10,12)})
+            io.to(`game-${gameID}-${nextSeat+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
+            res.status(200).json({message:'Success'})
+        }else if(round === 3){
+            for(let i=0; i<chips.length; i++){
+                if(chips[i] !== -1){
+                    chips[i] = -2
+                }
+            }
+            await game_status.updateChips(gameID, chips)
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: Third round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(13,15)})
+            io.to(`game-${gameID}-${nextSeat+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
+            res.status(200).json({message:'Success'})
+        }else if(round === 4){
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: Fourth and final round of betting concluded", timestamp: Date.now()})
+            handleGameEnd(req,res)
+        }
+    }catch(err){
+        console.log(err)
+    }
+}
 
 const handleGameEnd = async(req, res) =>{
     const io=req.app.get('io')
@@ -325,9 +369,19 @@ const handleGameEnd = async(req, res) =>{
         await game_table.updateDealer(gameID, newDealer)
         await game_status.deleteStatus(gameID)
 
-        const message = `Game Over.  ${wallet.username} wins $${status[0].pot}`
-        io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: message, timestamp: Date.now()})
+        const remainingPlayers = {}
+        for(let i=0; i<status[0].player_chips.length; i++){
+            console.log("status[0].player_chips[i]: "+ status[0].player_chips[i])
+            if(status[0].player_chips[i] !== -1){
+                // remainingPlayers.set(status[0].players_alive[i], status[0].player_cards[i])
+                remainingPlayers[status[0].players_alive[i]] = status[0].player_cards[i]
+            }
+        }
+        console.log("remaining Players; " + JSON.stringify(remainingPlayers))
+        io.to(`game-${gameID}`).emit(socketCalls.GAME_ENDS_SHOW_CARDS,{remaining: remainingPlayers})
 
+        const message = `System: Game Over.  ${wallet.username} wins $${status[0].pot}`
+        io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: message, timestamp: Date.now()})
         io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_START_GAME,{})
 
         res.status(200).json({message:'Success'})
@@ -337,32 +391,51 @@ const handleGameEnd = async(req, res) =>{
 }
 
 const playerFOLDS = async(req, res) =>{
+    const io=req.app.get('io')
     const {gameID} = req.params
     const username = req.session.user.username
+    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: `System: ${username} has folded`, timestamp:Date.now()})
     try{
         const g = await game_status.getStatus(gameID)
-        const ranks = g[0].player_ranks
-        const alive = g[0].players_alive
-        const chips = g[0].player_chips
-        const x = alive.indexOf(username)
-        if(x !== -1){
-            alive[x] = 'folded'
-            ranks[x] = 0
-            chips[x] = -1
-        }else{
-            console.log('*playerFOLDS* player not in game')
-        }
-        await game_status.playerFolds(gameID, alive, ranks, chips)
-
-        let count = 0
-        for(let i=0; i<alive.length; i++){
-            console.log('alive[i]: ' + alive[i] + typeof(alive[i]))
-            if(alive[i] !== 'folded'){
-                count ++
+        if(g.length !== 0){
+            const ranks = g[0].player_ranks
+            const alive = g[0].players_alive
+            const chips = g[0].player_chips
+            const x = alive.indexOf(username)
+            if(x !== -1){
+                alive[x] = 'folded'
+                ranks[x] = 0
+                chips[x] = -1
+            }else{
+                console.log('*playerFOLDS* player not in game')
             }
-        }
-        if(count === 1){
-            handleGameEnd(req,res)
+            await game_status.playerFolds(gameID, alive, ranks, chips)
+            
+            io.to(`game-${gameID}`).emit(socketCalls.PLAYER_FOLDS,{username: username})
+
+            let count = 0
+            for(let i=0; i<alive.length; i++){
+                console.log('alive[i]: ' + alive[i] + typeof(alive[i]))
+                if(alive[i] !== 'folded'){
+                    count ++
+                }
+            }
+            if(count === 1){
+                handleGameEnd(req,res)
+            }else{
+                const raise = Math.max(...chips)
+                const nextBetIndex = (x+1)%chips.length
+                let diff
+                if(raise === chips[nextBetIndex]){
+                    startNewRound(req,res)
+                }else if(chips[nextBetIndex] === -2){
+                    diff = raise-chips[nextBetIndex]-2
+                    io.to(`game-${gameID}-${nextBetIndex+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
+                }else{
+                    diff = raise-chips[nextBetIndex]
+                    io.to(`game-${gameID}-${nextBetIndex+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: diff, bigBlind: false})
+                }
+            }
         }
 
     }catch(err){
@@ -372,6 +445,7 @@ const playerFOLDS = async(req, res) =>{
 
 router.post('/:gameID/fold', (req,res)=>{
     playerFOLDS(req,res)
+    res.status(200).json({message: 'Success'})
 })
 
 router.post('/:gameID/leave', async (req, res)=>{
@@ -382,24 +456,24 @@ router.post('/:gameID/leave', async (req, res)=>{
     try{
         player_table.leaveTable(userID, gameID)
         let {name, minimum, maximum, count, players, plimit, dealer} = await game_table.getData(gameID)
-        var playerIndex = players.indexOf(username)
-        while(playerIndex !== -1){
-            players.splice(playerIndex,1)
-            count -= 1
-            playerIndex = players.indexOf(username)
-        }
+        const playerIndex = players.indexOf(username)
+        players.splice(playerIndex,1)
+        count -= 1
         await game_table.updatePlayers(gameID, count, players)
         
         const playerSeat = playerIndex+1
         const allSeats = await player_table.getAllSeats(gameID)
+        console.log("allSeats: " + JSON.stringify(allSeats))
         for(let i=0; i<allSeats.length; i++){
+            console.log("allSeats[i].seat: "+allSeats[i].seat)
+            console.log("playerSeat: " + playerSeat)
             if(allSeats[i].seat > playerSeat){
                 await player_table.updateSeat(gameID, allSeats[i].player_id, allSeats[i].seat-1)
             }
         }
 
         playerFOLDS(req, res)
-        const message = req.session.user.username + ' has left'
+        const message = "System: "+req.session.user.username + ' has left'
         io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp: Date.now()})
         io.to(`game-${gameID}`).emit(socketCalls.PLAYER_LEFT_RECEIVED,{username})
         

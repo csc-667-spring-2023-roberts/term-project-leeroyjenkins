@@ -1,22 +1,13 @@
-html
-  head
-    title #{title}
-    link(rel='stylesheet' href='/stylesheets/lobby.css')
+extends layout.pug 
 
-  body
-    <div id="header">
-      <a href=/home id="logo-link">Texas Hold'em Poker</a>
-      <div>
-        <form action='/home/logout' method='post'>
-          <button type='submit' id="logout"> Log Out </button>
-        </form>
-      </div>
-    </div>
-    
-    <div id="game-rooms">
-      h1 Welcome #{username}
-      p Current Balance: #{wallet}
-
+block content 
+  form(action='/home/logout', method='post')
+    button(type='submit') Log Out 
+  form(action='/home/createTable', method='get')
+    button(type='submit') Create Table
+  
+  h1 Welcome #{username}
+  p Current Balance: #{wallet}
 
   h1 Game Table
   table
@@ -68,9 +59,7 @@ html
               label
                   input(id='chatMessage',  name='chat-message',placeholder='Message...')
 
-    </div>
 
 
-
-    script(src='/scripts/gameTable.js')
-    script(src="/scripts/bundle.js")
+  script(src='/scripts/gameTable.js')
+  script(src='/scripts/homeChat.bundle.js', defer)

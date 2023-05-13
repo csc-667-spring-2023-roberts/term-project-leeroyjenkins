@@ -37,11 +37,11 @@ router.post('/login', async (req, res) =>{
       }
       res.redirect('/home')
     }else{
-      res.send('valid not true')
+      res.render('login', {message: "Incorrect password"})
     }
   }catch(err){
     console.log(err)
-    res.send('error with post/login try catch')
+    res.render('login', {message: "Email does not exist"})
   }
 })
 

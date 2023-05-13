@@ -7,7 +7,7 @@
     "start": "node ./server.js",
     "devStart": "nodemon ./server.js",
     "start:dev": "concurrently \"npm:server:dev\" \"npm:build:dev\"",
-    "server:dev": "NODE_ENV=development nodemon -e js,pug --watch backend ./server.js",
+    "server:dev": "SET NODE_ENV=development & nodemon -e js,pug --watch backend ./server.js",
     "build": "webpack",
     "build:dev": "webpack --watch",
     "prepare": "husky install",
@@ -58,10 +58,10 @@
     "concurrently": "^8.0.1",
     "connect-livereload": "^0.6.1",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.0",
+    "lint-staged": "^13.2.2",
     "livereload": "^0.9.3",
     "nodemon": "^2.0.22",
-    "webpack": "^5.77.0",
-    "webpack-cli": "^5.0.1"
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2"
   }
 }

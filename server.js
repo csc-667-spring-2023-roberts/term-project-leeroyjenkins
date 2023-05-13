@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require('body-parser')
 const requestTime = require("./backend/middleware/request-time")
+const initSockets = require("./backend/sockets/init.js");
 
 
 const session = require('express-session')
@@ -21,7 +22,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 const sessionMiddleware = session({
-  store: new pgSession({pgPromise: db, tableName: 'sessions'}),
+  store: new pgSession({pgPromise: db}),
   secret: 'secret',
   resave: false,
   saveUninitialized: false,
@@ -30,8 +31,8 @@ const sessionMiddleware = session({
   },
 })
 
-app.use(sessionMiddleware)
-
+app.use(sessionMiddleware);
+const server = initSockets(app, sessionMiddleware);
 
 if (process.env.NODE_ENV === "development") {
   const livereload = require("livereload");
@@ -56,19 +57,18 @@ app.use(requestTime);
 
 const PORT = process.env.PORT || 3002;
 
-const initSockets = require('./backend/sockets/initialize.js')
-const server = initSockets(app, sessionMiddleware)
-
 const isAuth = require('./backend/middleware/isAuth')
 const isNotAuth = require('./backend/middleware/isNotAuth')
 const rootRoutes = require("./backend/routes/root")
 const homeRoutes = require('./backend/routes/home.js')
 const gamesRoutes = require('./backend/routes/games')
+const lobbyChatRoute = require('./backend/routes/lobbyChat')
 const chatRoutes = require('./backend/routes/chat')
 
-app.use("/", isNotAuth, rootRoutes)
-app.use('/home', isAuth, homeRoutes)
-app.use('/games', isAuth, gamesRoutes)
+app.use("/", rootRoutes)
+app.use('/home', homeRoutes)
+app.use('/games', gamesRoutes)
+app.use('/lobby-chat', lobbyChatRoute)
 app.use('/chat', chatRoutes)
 
 

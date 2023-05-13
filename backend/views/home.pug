@@ -8,6 +8,7 @@ html
   body 
     <div id="header">
       <a href=/home id="logo-link">Texas Hold'em Poker</a>
+      <h2 id="username">#{username}</h2>
       <div>
         <form action='/home/logout' method='post'>
           <button type='submit' id="logout"> Log Out </button>
@@ -16,16 +17,18 @@ html
     </div>
 
     div(id="game-rooms")
-      h1 Welcome #{username}
-      p Current Balance: #{wallet}
+      h2(id="balance") Current Balance: $#{wallet}
+      
+      form(action='/home/createTable', method='get' id='new-game-form')
+        button(type='submit' id='new-game-button') Create New Game
 
-      h1 Game Table
+      h1 Ongoing Games
       table
         thead
           tr
-            th Name
-            th Minimum
-            th Maximum
+            th Room Name
+            th Minimum Bet
+            th Maximum Bet
             th Players
             th Limit
             th Join
@@ -38,16 +41,16 @@ html
               td= game.count
               td= game.plimit
               td
-                form(action=`/games/${game.id}`, method='post')
+                form(action=`/games/${game.id}`, method='post' class='join-form')
                   button(type='submit') Join
       
       h1 Personal Games
       table 
         thead 
           tr
-            th Name
-            th Minimum
-            th Maximum
+            th Room Name
+            th Minimum Bet
+            th Maximum Bet
             th Players
             th Limit
             th Join
@@ -60,10 +63,8 @@ html
               td= pgame.count
               td= pgame.plimit
               td 
-                form(action=`/games/${pgame.id}`, method='post')
+                form(action=`/games/${pgame.id}`, method='post' class='join-form')
                   button(type='submit') Join
-      form(action='/home/createTable', method='get')
-        button(type='submit') Create Table
 
     <div id="lobby-chat-container">
       <div id="lobby-messages"></div>

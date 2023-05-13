@@ -17,7 +17,7 @@ body {
     border: solid black 1px;
     height: 100%;
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 50% 40% 10%;
     background-color: black;
 }
 
@@ -27,6 +27,14 @@ body {
     padding-left: 1rem;
     font-size: 2rem;
     color: white;
+}
+
+#username{
+    color: white;
+    text-align: right;
+    padding-right: 2rem;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 #logout{
@@ -39,10 +47,55 @@ body {
 }
 
 #game-rooms{
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
     grid-column: 1 / span 1;
     grid-row: 2 / span 1;
     border: solid black 1px;
     height: 100%;
+    overflow-y: auto;
+}
+
+#balance{
+    margin: 0;
+    text-align: right;
+    padding-right: 1rem;
+}
+
+h1{
+    margin: 0;
+    text-align: center;
+}
+
+table{
+    margin: 0;
+    width: 100%;
+    padding: 1rem;
+    table-layout: fixed;
+    border-spacing: 0px;
+}
+
+td{
+    width: auto;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    border: solid black 1px;
+}
+
+.join-form{
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#new-game-form{
+    text-align: center;
+}
+
+#new-game-button{
+    font-size: 2rem;
 }
 
 #lobby-chat-container{

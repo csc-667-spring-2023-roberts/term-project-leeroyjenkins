@@ -3,7 +3,6 @@ const path = require("path");
 module.exports = {
   entry: {
     homeChat: "./frontend/homeChat.js",
-    lobbyChat: "./frontend/lobbyChat.js",
     gameSocket: "./frontend/gameSocket.js",
   },
   output: {

@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 const sessionMiddleware = session({
-  store: new pgSession({pgPromise: db, tableName: 'sessions'}),
+  store: new pgSession({pgPromise: db}),
   secret: 'secret',
   resave: false,
   saveUninitialized: false,

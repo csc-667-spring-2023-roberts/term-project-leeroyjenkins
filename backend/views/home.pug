@@ -1,65 +1,74 @@
-extends layout.pug 
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/lobby.css')
+    script(src='/scripts/gameTable.js', defer)
+    script(src='/scripts/homeChat.bundle.js', defer)
 
-block content 
-  form(action='/home/logout', method='post')
-    button(type='submit') Log Out 
-  form(action='/home/createTable', method='get')
-    button(type='submit') Create Table
-  
-  h1 Welcome #{username}
-  p Current Balance: #{wallet}
+  body 
+    <div id="header">
+      <a href=/home id="logo-link">Texas Hold'em Poker</a>
+      <div>
+        <form action='/home/logout' method='post'>
+          <button type='submit' id="logout"> Log Out </button>
+        </form>
+      </div>
+    </div>
 
-  h1 Game Table
-  table
-    thead
-      tr
-        th Name
-        th Minimum
-        th Maximum
-        th Players
-        th Limit
-        th Join
-    tbody
-      each game in games
-        tr(id=game.id)
-          td= game.name
-          td= game.minimum
-          td= game.maximum
-          td= game.count
-          td= game.plimit
-          td
-            form(action=`/games/${game.id}`, method='post')
-              button(type='submit') Join
-  
-  h1 Personal Games
-  table 
-    thead 
-      tr
-        th Name
-        th Minimum
-        th Maximum
-        th Players
-        th Limit
-        th Join
-    tbody
-      each pgame in pgames
-        tr(id=pgame.id)
-          td= pgame.name
-          td= pgame.minimum
-          td= pgame.maximum
-          td= pgame.count
-          td= pgame.plimit
-          td 
-            form(action=`/games/${pgame.id}`, method='post')
-              button(type='submit') Join
-       
-  br
-  div(id = 'chat-container')
-          div(id = 'messages')
-              label
-                  input(id='chatMessage',  name='chat-message',placeholder='Message...')
+    div(id="game-rooms")
+      h1 Welcome #{username}
+      p Current Balance: #{wallet}
 
+      h1 Game Table
+      table
+        thead
+          tr
+            th Name
+            th Minimum
+            th Maximum
+            th Players
+            th Limit
+            th Join
+        tbody
+          each game in games
+            tr(id=game.id)
+              td= game.name
+              td= game.minimum
+              td= game.maximum
+              td= game.count
+              td= game.plimit
+              td
+                form(action=`/games/${game.id}`, method='post')
+                  button(type='submit') Join
+      
+      h1 Personal Games
+      table 
+        thead 
+          tr
+            th Name
+            th Minimum
+            th Maximum
+            th Players
+            th Limit
+            th Join
+        tbody
+          each pgame in pgames
+            tr(id=pgame.id)
+              td= pgame.name
+              td= pgame.minimum
+              td= pgame.maximum
+              td= pgame.count
+              td= pgame.plimit
+              td 
+                form(action=`/games/${pgame.id}`, method='post')
+                  button(type='submit') Join
+      form(action='/home/createTable', method='get')
+        button(type='submit') Create Table
 
-
-  script(src='/scripts/gameTable.js')
-  script(src='/scripts/homeChat.bundle.js', defer)
+    <div id="lobby-chat-container">
+      <div id="lobby-messages"></div>
+      <label>
+        <textarea id="lobby-chat-input" name="lobby-chat-message" placeholder="Message..."></textarea>
+      </label>
+    </div>
+            

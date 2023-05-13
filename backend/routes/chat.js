@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router()
 const constants = require('../sockets/constants')
 
-router.post('/:id', (req, res, next) =>{
+router.post('/', (req, res, next) =>{
     const io = req.app.get('io');
     const {message} = req.body;
     const {username} = req.session.user;

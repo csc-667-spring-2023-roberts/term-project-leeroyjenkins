@@ -5,6 +5,28 @@ import socketCalls from '../backend/sockets/constants'
 
 const socket = io();
 
+let messageContainer
+
+document.addEventListener("DOMContentLoaded", function () {
+    messageContainer = document.querySelector("#lobby-messages");
+    const input = document.querySelector("#lobby-chat-input");
+    if(input){
+      input.addEventListener("keydown", (event) => {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          const message = event.target.value;
+          event.target.value = "";
+    
+          fetch('/chat/',{
+            method:"post",
+            headers:{"Content-Type": "application/json"},
+            body: JSON.stringify({message}),
+        })
+        }
+      });
+    }
+  });
+
 const joinGameButton = document.querySelectorAll('div#JoinGame')
 joinGameButton.forEach(button=>{
     button.addEventListener('click',(event)=>{
@@ -17,12 +39,13 @@ joinGameButton.forEach(button=>{
     })
 })
 
-const messageContainer= document.querySelector('#messages')
+
 socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>{
     const entry = document.createElement('div');
+    entry.setAttribute('class', 'lobby-message')
 
     const displayName = document.createElement('span')
-    displayName.innerText = username
+    displayName.innerText = username + ":"
     const displayMessage = document.createElement('span')
     displayMessage.innerText = message
     const displayTimestamp = document.createElement('span')
@@ -32,18 +55,4 @@ socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>
     messageContainer.appendChild(entry)
 })
 
-document.querySelector("input#chatMessage").addEventListener('keydown',(event)=>{
-    if(event.keyCode !== 13){
-        return
-    }
-    // console.log('Sending', event.target.value)
-    const message = event.target.value;
-    event.target.value = ""
-
-    fetch('/chat/0',{
-        method:"post",
-        headers:{"Content-Type": "application/json"},
-        body: JSON.stringify({message}),
-    })
-})
 

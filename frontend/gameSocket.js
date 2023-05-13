@@ -56,6 +56,18 @@ if(foldButton){
         })
     })
 }
+document.querySelector("input#gameChatMessage").addEventListener('keydown',(event)=>{
+    if(event.keyCode !== 13){
+        return
+    }
+    const message = event.target.value;
+    event.target.value=""
+    fetch(`/chat/game/${gameID}`,{
+        method:"post",
+        headers:{"Content-Type": "application/json"},
+        body: JSON.stringify({message}),
+    })
+})
 
 socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     const systemMessageContainer = document.querySelector('#System')
@@ -63,7 +75,7 @@ socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     const entry = document.createElement('div');
         
     const messageSpan = document.createElement('span')
-    messageSpan.innerText = "System: " + message 
+    messageSpan.innerText = message 
 
     const timeStampSpan = document.createElement('span')
     const date = new Date(timestamp)

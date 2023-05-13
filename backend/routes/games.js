@@ -145,7 +145,7 @@ router.post('/:gameID', async (req,res)=>{
                 await game_table.updatePlayers(gameID,count,players)
                 await player_table.joinPlayerTable(userID, gameID, count)
                 
-                const message = username + " has joined"
+                const message = "System: "+username + " has joined"
                 io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, gameID, timestamp: Date.now()})
                 io.to(`game-${gameID}`).emit(socketCalls.PLAYER_JOINED_RECEIVED,{username})
                 res.redirect(`/games/${gameID}`)
@@ -225,7 +225,7 @@ router.post('/:gameID/bet', async(req, res)=>{
     }else{
         message = `${username} calls`
     }
-    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message:`${username} bets $${bet}`, timestamp:Date.now()})
+    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message:`System: ${username} bets $${bet}`, timestamp:Date.now()})
     // console.log('bet: ' + bet)
     try{
         // check if funds exist in players
@@ -305,7 +305,7 @@ const startNewRound = async(req,res) =>{
                 }
             }
             await game_status.updateChips(gameID, chips)
-            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "First round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: First round of betting concluded", timestamp: Date.now()})
             io.to(`game-${gameID}`).emit(socketCalls.GAME_FLOP,{cards: [g[0].community.slice(1,3),g[0].community.slice(4,6),g[0].community.slice(7,9)]})
             io.to(`game-${gameID}-${nextSeat+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
             res.status(200).json({message:'Success'})
@@ -316,7 +316,7 @@ const startNewRound = async(req,res) =>{
                 }
             }
             await game_status.updateChips(gameID, chips)
-            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "Second round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: Second round of betting concluded", timestamp: Date.now()})
             io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(10,12)})
             io.to(`game-${gameID}-${nextSeat+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
             res.status(200).json({message:'Success'})
@@ -327,12 +327,12 @@ const startNewRound = async(req,res) =>{
                 }
             }
             await game_status.updateChips(gameID, chips)
-            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "Third round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: Third round of betting concluded", timestamp: Date.now()})
             io.to(`game-${gameID}`).emit(socketCalls.GAME_TURN_RIVER,{card: g[0].community.slice(13,15)})
             io.to(`game-${gameID}-${nextSeat+1}`).emit(socketCalls.ACTION_PLAYERS_TURN,{callAmount: 0, bigBlind: false})
             res.status(200).json({message:'Success'})
         }else if(round === 4){
-            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "Fourth and final round of betting concluded", timestamp: Date.now()})
+            io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: "System: Fourth and final round of betting concluded", timestamp: Date.now()})
             handleGameEnd(req,res)
         }
     }catch(err){
@@ -380,7 +380,7 @@ const handleGameEnd = async(req, res) =>{
         console.log("remaining Players; " + JSON.stringify(remainingPlayers))
         io.to(`game-${gameID}`).emit(socketCalls.GAME_ENDS_SHOW_CARDS,{remaining: remainingPlayers})
 
-        const message = `Game Over.  ${wallet.username} wins $${status[0].pot}`
+        const message = `System: Game Over.  ${wallet.username} wins $${status[0].pot}`
         io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: message, timestamp: Date.now()})
         io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_START_GAME,{})
 
@@ -394,7 +394,7 @@ const playerFOLDS = async(req, res) =>{
     const io=req.app.get('io')
     const {gameID} = req.params
     const username = req.session.user.username
-    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: `${username} has folded`, timestamp:Date.now()})
+    io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: `System: ${username} has folded`, timestamp:Date.now()})
     try{
         const g = await game_status.getStatus(gameID)
         if(g.length !== 0){
@@ -473,7 +473,7 @@ router.post('/:gameID/leave', async (req, res)=>{
         }
 
         playerFOLDS(req, res)
-        const message = req.session.user.username + ' has left'
+        const message = "System: "+req.session.user.username + ' has left'
         io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message, timestamp: Date.now()})
         io.to(`game-${gameID}`).emit(socketCalls.PLAYER_LEFT_RECEIVED,{username})
         

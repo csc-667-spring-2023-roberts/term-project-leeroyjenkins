@@ -31,15 +31,14 @@ block content
         else if round == 3
             each card in community
                 div(id='Card')= card
-    h3 Pot
-    div(id='Pot') #{pot}
-    h3 Chips
-    div(id='Chips') #{chips}
     H3 Your hand:
     div(id='Hand')
         each card in hand 
             div(id='Card')= card
-    br
+    h3 Pot
+    div(id='Pot') #{pot}
+    h3 Chips
+    div(id='Chips') #{chips}
     label Actions:
     div(id='Actions')
         if callAmount != -2

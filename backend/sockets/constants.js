@@ -9,9 +9,19 @@ const GAME_TURN_RIVER = 'game_turn_river'
 const GAME_DEAL_CARDS = 'game_deal_cards'
 const UPDATE_POT = 'update_pot'
 const UPDATE_CHIPS = 'update_chips'
+const REFRESH_GAME = 'refresh_game'
+const PLAYER_FOLDS = 'player_folds'
+const GAME_ENDS_SHOW_CARDS = 'game_ends_show_cards'
+const ACTION_PAY_BIG_BLIND = 'action_pay_big_blind'
+const LOAD_PLAYERS = 'load_players'
 
 module.exports = {
     UPDATE_POT,
+    ACTION_PAY_BIG_BLIND,
+    LOAD_PLAYERS,
+    GAME_ENDS_SHOW_CARDS,
+    REFRESH_GAME,
+    PLAYER_FOLDS,
     UPDATE_CHIPS,
     CHAT_MESSAGE_RECEIVED,
     SYSTEM_MESSAGE_RECEIVED,

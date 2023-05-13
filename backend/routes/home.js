@@ -4,6 +4,7 @@ const router = express.Router();
 const game_table = require('../db/game_table.js')
 const player_table = require('../db/player_table.js')
 const players = require('../db/players.js')
+const socketCalls = require('../sockets/constants')
 
 router.get('/', async(req,res)=>{
     const userID = req.session.user.id
@@ -43,6 +44,7 @@ router.get('/createTable', (req, res)=>{
 })
 
 router.post('/createTable', async(req, res, next)=>{
+    const io=req.app.get('io')
     const {tname, min, max, plimit} = req.body
     const userID = req.session.user.id
     try{
@@ -59,6 +61,7 @@ router.post('/createTable', async(req, res, next)=>{
                     console.log("userid: " + userID)
                     console.log("tableID: " + tableID.id)
                     await player_table.joinPlayerTable(userID, tableID.id, count)
+                    io.emit(socketCalls.TABLE_UPDATE, {tableID: tableID, min: min, max:max, tname: tname, plimit: plimit,count: count})
                     res.redirect(`/games/${tableID.id}`)
                 }catch(error){
                     console.log('*player_table.joinPlayerTable*\n' + error)

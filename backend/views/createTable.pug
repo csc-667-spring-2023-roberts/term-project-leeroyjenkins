@@ -1,23 +1,41 @@
 html 
     head 
         title Create Table
+        link(rel='stylesheet' href='/stylesheets/create-table.css')
 
     body 
-        h1 Create Table 
-        form(action='/home/createTable', method = 'post')
-            label(for='tname') Table Name: 
-            input(type='text', id='tname', name='tname', required)
-            br
-            label(for='minimum') Minimum Bet:
-            input(type='number', id='min', name='min', required)
-            br
-            label(for='maximum') Maximum Bet: 
-            input(type='number', id='max', name='max')
-            br
-            label(for='plimit') Maximum Players:
-            input(type='number', id='plimit', name='plimit')
-            br
-            button(type='submit') Submit
-        
-        form(action='/home', method='get')
-            button(type='submit') Back
+        <div id="header">
+            <a href=/home id="logo-link">
+                <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
+            </a>
+
+            <h2 id="username">#{username}</h2>
+            <div>
+                <form action='/home/logout' method='post'>
+                <button type='submit' id="logout"> Log Out </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="table-container">
+            h1 Create Game Table 
+            form(action='/games/createTable', method = 'post')
+                label(for='tname') Table Name: 
+                input(type='text', id='tname', name='tname', required)
+                br
+                label(for='min') Minimum Bet:
+                input(type='number', id='min', name='min', required)
+                br
+                label(for='max') Maximum Bet: 
+                input(type='number', id='max', name='max')
+                br
+                label(for='plimit') Maximum Players:
+                input(type='number', id='plimit', name='plimit')
+
+                p(id="error-message")=message
+                
+                button(type='submit' class="button") Submit
+            
+            form(action='/home', method='get')
+                button(type='submit' class="button") Back
+        </div>

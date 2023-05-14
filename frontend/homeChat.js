@@ -49,7 +49,8 @@ socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>
     const displayMessage = document.createElement('span')
     displayMessage.innerText = message
     const displayTimestamp = document.createElement('span')
-    displayTimestamp.innerText = timestamp
+    displayTimestamp.innerText = " " + new Date(timestamp).toLocaleString()
+    displayTimestamp.style.fontSize = "9pt";
 
     entry.append(displayName,displayMessage,displayTimestamp)
     messageContainer.appendChild(entry)

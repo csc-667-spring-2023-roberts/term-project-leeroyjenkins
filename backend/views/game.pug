@@ -1,59 +1,83 @@
-extends layout.pug 
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/game.css')
 
-block content 
-    form(id='seatValue')
-        input(type='hidden', name='seatVal',value=`${seat}`)
-    form(action=`/games/${gameID}/leave`, method='post')
-        button(type='submit') Leave 
-    form(action='/home', method='get')
-        button(type='submit') games
-    p seat: #{seat} out of : #{plimit}
-    p chips: #{wallet}
-    p dealer: #{dealer}
-    p minimum: #{min}
-    p maximum: #{max}
-    h3 Lobby
-    div(id='Lobby')
-        each person in lobby 
-            div(id='lobby')= person
-    h3 Players in game
-    div(id='Players')
-        each person in alive 
-            div(id='alive')= person
-    h3 Community Cards
-    div(id='Community')
-        if round == 1
-            each card in community.slice(0,3)
+  body 
+    <div id="header">
+      <a href=/home id="logo-link">
+        <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
+      </a>
+
+      <h2 id="username">#{username}</h2>
+      <div>
+        <form action='/home/logout' method='post'>
+          <button type='submit' id="logout"> Log Out </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="game-area">
+        <div>
+            form(id='seatValue')
+                input(type='hidden', name='seatVal',value=`${seat}`)
+            form(action=`/games/${gameID}/leave`, method='post')
+                button(type='submit') Leave game room
+            form(action='/home', method='get')
+                button(type='submit') Back to lobby
+        </div>
+        p seat: #{seat} out of : #{plimit}
+        p chips: #{wallet}
+        p dealer: #{dealer}
+        p minimum: #{min}
+        p maximum: #{max}
+        h3 Lobby
+        div(id='Lobby')
+            each person in lobby 
+                div(id='lobby')= person
+        h3 Players in game
+        div(id='Players')
+            each person in alive 
+                div(id='alive')= person
+        h3 Community Cards
+        div(id='Community')
+            if round == 1
+                each card in community.slice(0,3)
+                    div(id='Card')= card
+            else if round == 2
+                each card in community.slice(0,4)
+                    div(id='Card')= card 
+            else if round == 3
+                each card in community
+                    div(id='Card')= card
+        H3 Your hand:
+        div(id='Hand')
+            each card in hand 
                 div(id='Card')= card
-        else if round == 2
-            each card in community.slice(0,4)
-                div(id='Card')= card 
-        else if round == 3
-            each card in community
-                div(id='Card')= card
-    H3 Your hand:
-    div(id='Hand')
-        each card in hand 
-            div(id='Card')= card
-    h3 Pot
-    div(id='Pot') #{pot}
-    h3 Chips
-    div(id='Chips') #{chips}
-    label Actions:
-    div(id='Actions')
-        if callAmount != -2
-            br
-            label Call = #{callAmount}
-            input(type='number', name='bet', id='betInput', min=callAmount)
-            br
-            if callAmount != 0
-                button(id='foldButton') Fold 
-        if round == -1 && seat == dealer+1
-            button(id='startGame') Start Game 
-    
-    h3 System
-    input(id='gameChatMessage', name='game-chat-message', placeholder='Message...')
-    div(id='System') 
+        h3 Pot
+        div(id='Pot') #{pot}
+        h3 Chips
+        div(id='Chips') #{chips}
+        label Actions:
+        div(id='Actions')
+            if callAmount != -2
+                br
+                label Call = #{callAmount}
+                input(type='number', name='bet', id='betInput', min=callAmount)
+                br
+                if callAmount != 0
+                    button(id='foldButton') Fold 
+            if round == -1 && seat == dealer+1
+                button(id='startGame') Start Game 
+    </div>
+
+    <div id="game-chat-container">
+      <div id="System"></div>
+      <label>
+        <textarea id='gameChatMessage', name='game-chat-message', placeholder='Message...'></textarea>
+      </label>
+    </div>
+
     //- button(id='testButton') Test
 
     script(src='/scripts/gameSocket.bundle.js', defer)

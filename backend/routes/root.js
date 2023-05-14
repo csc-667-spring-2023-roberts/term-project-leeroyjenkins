@@ -50,8 +50,9 @@ router.post('/register', async (req, res) =>{
   try{
     const p = await players.findByEmail(email)
     if(p.length > 0){
-      //FIX LATER
-      res.send('email in use')
+      res.render('register', {
+        message: 'Email is in use',
+      });
     }else{
       const saltHash = genPassword(password)
       const salt = saltHash.salt

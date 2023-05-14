@@ -39,41 +39,4 @@ router.post('/logout', (req, res) =>{
     res.redirect('/')
 })
 
-router.get('/createTable', (req, res)=>{
-    res.render('createTable')
-})
-
-router.post('/createTable', async(req, res, next)=>{
-    const io=req.app.get('io')
-    const {tname, min, max, plimit} = req.body
-    const userID = req.session.user.id
-    try{
-        const t = await game_table.tableNameInUse(tname)
-        if(t.length > 0){
-            //FIX LATER
-            res.send('name in use')
-        }else{
-            try{
-                const count = 1;
-                const playerArray = [req.session.user.username]
-                const tableID = await game_table.createTable(min, max, tname, plimit, count, playerArray)
-                try{
-                    console.log("userid: " + userID)
-                    console.log("tableID: " + tableID.id)
-                    await player_table.joinPlayerTable(userID, tableID.id, count)
-                    io.emit(socketCalls.TABLE_UPDATE, {tableID: tableID, min: min, max:max, tname: tname, plimit: plimit,count: count})
-                    res.redirect(`/games/${tableID.id}`)
-                }catch(error){
-                    console.log('*player_table.joinPlayerTable*\n' + error)
-                    res.send('*player_table.joinPlayerTable*\n' + error)
-                }
-            }catch(err){
-                console.log(err)
-            }
-        }
-    }catch(err){
-        console.log(err)
-    }
-})
-
 module.exports = router

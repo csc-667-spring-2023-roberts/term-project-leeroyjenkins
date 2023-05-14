@@ -56,18 +56,24 @@ if(foldButton){
         })
     })
 }
-document.querySelector("input#gameChatMessage").addEventListener('keydown',(event)=>{
-    if(event.keyCode !== 13){
-        return
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.querySelector("#gameChatMessage");
+    if(input){
+      input.addEventListener("keydown", (event) => {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            const message = event.target.value;
+            event.target.value=""
+            fetch(`/chat/game/${gameID}`,{
+                method:"post",
+                headers:{"Content-Type": "application/json"},
+                body: JSON.stringify({message}),
+            })
+        }
+      });
     }
-    const message = event.target.value;
-    event.target.value=""
-    fetch(`/chat/game/${gameID}`,{
-        method:"post",
-        headers:{"Content-Type": "application/json"},
-        body: JSON.stringify({message}),
-    })
-})
+});
 
 socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     const systemMessageContainer = document.querySelector('#System')
@@ -78,11 +84,15 @@ socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
     messageSpan.innerText = message 
 
     const timeStampSpan = document.createElement('span')
-    const date = new Date(timestamp)
+    const date = " " + new Date(timestamp).toLocaleString()
     timeStampSpan.innerText= date
+    timeStampSpan.style.fontSize = "9pt";
     
     entry.append(messageSpan, timeStampSpan)
-    systemMessageContainer.insertBefore(entry, systemMessageContainer.firstChild)
+    entry.setAttribute('class', 'game-message')
+
+    systemMessageContainer.appendChild(entry)
+    systemMessageContainer.lastChild.scrollIntoView();
 })
 
 socket.on(socketCalls.PLAYER_JOINED_RECEIVED, ({username})=>{

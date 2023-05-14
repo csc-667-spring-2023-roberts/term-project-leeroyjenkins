@@ -19,13 +19,18 @@ body {
 #icon-name{
     color: white;
     white-space: nowrap;
+    margin: 0;
+    padding: 0;
 }
 
 #icon-picture{
+    margin: 0;
+    padding: 0;
     height: 3rem;
     width: 3rem;
     margin-top: auto;
     margin-bottom: auto;
+    border: solid white 1px;
 }
 
 #auth-container{
@@ -80,6 +85,11 @@ input{
 input:focus{
     outline: none;
     background-size: 100% 3px;
+}
+
+#error-message{
+    color: red;
+    text-align: center;
 }
 
 @media all and (max-width: 900px) {

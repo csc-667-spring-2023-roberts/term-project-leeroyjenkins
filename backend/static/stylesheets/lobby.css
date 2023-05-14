@@ -1,5 +1,6 @@
 body {
-    background-color: rgba(0,0,255,0.1);
+    background: rgb(199,182,255);
+    background: radial-gradient(circle, rgba(199,182,255,1) 0%, rgba(151,115,200,1) 100%);
     display: grid;
     grid-template-columns: 70% 30%;
     grid-template-rows: 3rem auto;
@@ -21,12 +22,22 @@ body {
     background-color: black;
 }
 
+#logo-picture{
+    height: 32px;
+    width: 32px;
+    border: solid white 1px;
+    margin-right: 3pt;
+}
+
 #logo-link{
     text-decoration: none;
     align-self: center;
     padding-left: 1rem;
     font-size: 2rem;
     color: white;
+    white-space: nowrap;
+    display: flex;
+    align-content: center;
 }
 
 #username{
@@ -44,6 +55,7 @@ body {
     top: 50%;
     left: 90%;
     transform: translateY(-50%);
+    white-space: nowrap;
 }
 
 #game-rooms{
@@ -55,6 +67,12 @@ body {
     border: solid black 1px;
     height: 100%;
     overflow-y: auto;
+}
+
+#error-message{
+    text-align: center;
+    font-size: 2rem;
+    color: red;
 }
 
 #balance{

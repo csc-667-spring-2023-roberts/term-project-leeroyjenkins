@@ -126,6 +126,7 @@ router.get('/:gameID', async(req, res) =>{
             }
 
             res.render('game',{
+                username: username,
                 gameID: gameID,
                 wallet: wallet.wallet,
                 seat: seat,
@@ -144,6 +145,7 @@ router.get('/:gameID', async(req, res) =>{
             })
         }else{
             res.render('game',{
+                username: username,
                 gameID: gameID,
                 wallet: wallet.wallet,
                 seat: seat,

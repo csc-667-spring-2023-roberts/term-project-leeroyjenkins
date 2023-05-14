@@ -16,7 +16,7 @@ body {
     border: solid black 1px;
     height: 100%;
     display: grid;
-    grid-template-columns: 50% 40% 10%;
+    grid-template-columns: 30% 50% 10% 10%;
     background-color: black;
 }
 
@@ -67,6 +67,31 @@ body {
     border: solid black 1px;
     height: 100%;
     overflow-y: auto;
+}
+
+#leave-buttons{
+    display: grid;
+    grid-template-columns: 0 auto auto;
+}
+
+form{
+    width: 100%;
+    height: 100%;
+}
+
+.leave-button{
+    width:80%;
+    height:100%;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+    border: none;
+    cursor: pointer;
+    margin: 0;
+}
+
+.leave-button:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(225,144,22,1) 100%);
 }
 
 #game-chat-container{

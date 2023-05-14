@@ -5,27 +5,26 @@ html
 
   body 
     <div id="header">
-      <a href=/home id="logo-link">
-        <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
-      </a>
-
-      <h2 id="username">#{username}</h2>
-      <div>
-        <form action='/home/logout' method='post'>
-          <button type='submit' id="logout"> Log Out </button>
-        </form>
-      </div>
-    </div>
-
-    <div id="game-area">
-        <div>
+        <a href=/home id="logo-link">
+            <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
+        </a>
+        <div id="leave-buttons">
             form(id='seatValue')
                 input(type='hidden', name='seatVal',value=`${seat}`)
             form(action=`/games/${gameID}/leave`, method='post')
-                button(type='submit') Leave game room
+                button(type='submit' class="leave-button") Leave game room
             form(action='/home', method='get')
-                button(type='submit') Back to lobby
+                button(type='submit' class="leave-button") Back to lobby
         </div>
+        <h2 id="username">#{username}</h2>
+        <div>
+            <form action='/home/logout' method='post'>
+            <button type='submit' id="logout"> Log Out </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="game-area">
         p seat: #{seat} out of : #{plimit}
         p chips: #{wallet}
         p dealer: #{dealer}

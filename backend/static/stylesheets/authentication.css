@@ -28,7 +28,7 @@ body {
     margin-bottom: auto;
 }
 
-#login-container{
+#auth-container{
     background-color: white;
     width: 30%;
     position: absolute;

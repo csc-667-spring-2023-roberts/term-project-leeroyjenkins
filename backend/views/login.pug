@@ -1,14 +1,15 @@
 html
   head
     title= title
-    link(rel='stylesheet' href='/stylesheets/login.css')
+    link(rel='stylesheet' href='/stylesheets/authentication.css')
 
   body
     <div id="icon-container">
         <img src="card_icon.jpg" alt="Card" id="icon-picture">
         <h1 id="icon-name"> Texas Hold'em Poker </h1>
     </div>
-    <div id="login-container">
+    
+    <div id="auth-container">
         h1 Log In 
         form(action='/login', method='post')
             label(for='email') Email: 

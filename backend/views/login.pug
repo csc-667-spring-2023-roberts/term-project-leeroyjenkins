@@ -1,15 +1,25 @@
-extends layout.pug 
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/login.css')
 
-block content 
-    h1 Log In 
-    form(action='/login', method='post')
-        label(for='email') Email: 
-        input(type='text', id='email', name='email', required)
-        br
-        label(for='password') Password:
-        input(type='type', id='password', name='password', required)
-        br
-        button(type='submit') Log In 
-    br
-    form(action='/register', method='get')
-        button(type='submit') Register
+  body
+    <div id="icon-container">
+        <img src="card_icon.jpg" alt="Card" id="icon-picture">
+        <h1 id="icon-name"> Texas Hold'em Poker </h1>
+    </div>
+    <div id="login-container">
+        h1 Log In 
+        form(action='/login', method='post')
+            label(for='email') Email: 
+            input(type='text', id='email', name='email', required)
+            
+            label(for='password') Password:
+            input(type='type', id='password', name='password', required)
+            
+            button(type='submit') Log In 
+            
+        h3 Don't have an account?
+        form(action='/register', method='get')
+            button(type='submit') Register
+    </div>

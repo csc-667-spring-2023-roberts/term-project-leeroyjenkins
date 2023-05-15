@@ -15,9 +15,11 @@ const GAME_ENDS_SHOW_CARDS = 'game_ends_show_cards'
 const ACTION_PAY_BIG_BLIND = 'action_pay_big_blind'
 const LOAD_PLAYERS = 'load_players'
 const TABLE_UPDATE = 'table_update'
+const GAME_UPDATE_PLAYER_CASH = 'game_update_player_cash'
 
 module.exports = {
     UPDATE_POT,
+    GAME_UPDATE_PLAYER_CASH,
     ACTION_PAY_BIG_BLIND,
     LOAD_PLAYERS,
     TABLE_UPDATE,

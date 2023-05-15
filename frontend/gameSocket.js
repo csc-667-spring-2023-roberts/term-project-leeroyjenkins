@@ -320,7 +320,10 @@ socket.on(socketCalls.GAME_TURN_RIVER, ({card})=>{
     community.appendChild(c)
 })
 
-socket.on(socketCalls.UPDATE_CHIPS, ({chips})=>{
+socket.on(socketCalls.UPDATE_CHIPS, ({chips, cash})=>{
+    console.log("updating cash: " + cash)
+    const pToChange = document.getElementById('Wallet')
+    pToChange.innerHTML =  cash
     const c = document.getElementById('Chips')
     c.innerHTML = chips
 })
@@ -330,7 +333,11 @@ socket.on(socketCalls.UPDATE_POT, ({pot})=>{
     p.innerHTML = pot
 })
 
-
+socket.on(socketCalls.GAME_UPDATE_PLAYER_CASH,({cash})=>{
+    console.log("updating cash: " + cash)
+    const pToChange = document.getElementById('Wallet')
+    pToChange.innerHTML = cash
+})
 
 
 

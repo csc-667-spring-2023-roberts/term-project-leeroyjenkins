@@ -60,7 +60,8 @@ html
         <div id="personal-info">
             h3 #{username}
             p Seat: #{seat} out of #{plimit}
-            p Current cash: $#{wallet}
+            p(class="chips-label") Current cash: &nbsp 
+            div(id='Wallet') #{wallet}
             p(class="chips-label") Chips:&nbsp
             div(id='Chips') #{chips}
         </div>

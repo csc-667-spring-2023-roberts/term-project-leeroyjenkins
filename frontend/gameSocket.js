@@ -127,6 +127,7 @@ socket.on(socketCalls.ACTION_START_GAME,({})=>{
     const action = document.getElementById('Actions')
     const button = document.createElement('button')
     button.innerHTML = 'Start Game'
+    button.setAttribute('id', 'startGame')
     button.addEventListener('click',()=>{
         action.innerHTML=''
         fetch(`/games/${gameID}/create`,{
@@ -166,12 +167,15 @@ socket.on(socketCalls.ACTION_PAY_BIG_BLIND,({callAmount, cards})=>{
     const raiseDiv = document.createElement('div')
 
     const minAmount = document.createElement('label')
-    minAmount.innerHTML = 'Big Blind, Call: ' + callAmount
+    minAmount.innerHTML = 'Big Blind, Call: $' + callAmount
+    minAmount.setAttribute('class','bet-label')
 
     const input = document.createElement('input')
     input.setAttribute('type','number')
     input.setAttribute('name','bet')
     input.setAttribute('min', callAmount)
+    input.setAttribute('id','betInput')
+    input.setAttribute('placeholder','Bet amount')
     input.addEventListener('keydown',(event)=>{
         if(event.key === 'Enter'){
             action.innerHTML=''
@@ -220,15 +224,19 @@ socket.on(socketCalls.ACTION_PLAYERS_TURN,({callAmount, bigBlind})=>{
 
     const minAmount = document.createElement('label')
     if(bigBlind){
-        minAmount.innerHTML = 'Big Blind, Call: ' + callAmount
+        minAmount.innerHTML = 'Big Blind, Call: $' + callAmount
+        minAmount.setAttribute('class','bet-label')
     }else{
-        minAmount.innerHTML = 'Call: ' + callAmount
+        minAmount.innerHTML = 'Call: $' + callAmount
+        minAmount.setAttribute('class','bet-label')
     }
 
     const input = document.createElement('input')
     input.setAttribute('type','number')
     input.setAttribute('name','bet')
     input.setAttribute('min', callAmount)
+    input.setAttribute('id','betInput')
+    input.setAttribute('placeholder','Bet amount')
     input.addEventListener('keydown',(event)=>{
         if(event.key === 'Enter'){
             const bet = event.target.value
@@ -250,6 +258,7 @@ socket.on(socketCalls.ACTION_PLAYERS_TURN,({callAmount, bigBlind})=>{
     if(!bigBlind && callAmount > 0){
         const foldButton = document.createElement('button')
         foldButton.innerHTML='Fold'
+        foldButton.setAttribute('id','foldButton')
         foldButton.addEventListener('click', ()=>{
             action.innerHTML=''
             fetch(`/games/${gameID}/fold`,{

@@ -204,7 +204,7 @@ router.post('/:gameID', async (req,res)=>{
                 const arrayOfTables = await player_table.getPlayersTables(req.session.user.id)
                 const filteredResults = results.filter(table => arrayOfTables.some(t => t.table_id === table.id))
                 const theRest = results.filter(table => !filteredResults.includes(table))
-                res.render('home', {games: theRest, pgames: filteredResults, wallet: wallet, username: req.session.user.username, message: `Game room ${name} is full`})
+                res.render('home', {games: theRest, pgames: filteredResults, wallet: wallet, username: username, message: `Game room ${name} is full`})
             }
         }else{
             res.redirect(`/games/${gameID}`)

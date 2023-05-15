@@ -8,13 +8,13 @@ html
         <a href=/home id="logo-link">
             <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
         </a>
-        <div id="leave-buttons">
+        <div>
             form(id='seatValue')
                 input(type='hidden', name='seatVal',value=`${seat}`)
             form(action=`/games/${gameID}/leave`, method='post')
-                button(type='submit' class="leave-button") Leave game room
+                button(type='submit' id="leave-game-button" class="leave-button") Leave game room
             form(action='/home', method='get')
-                button(type='submit' class="leave-button") Back to lobby
+                button(type='submit' id="lobby-button" class="leave-button") Back to lobby
         </div>
         <h2 id="username">#{username}</h2>
         <div>
@@ -25,49 +25,63 @@ html
     </div>
 
     <div id="game-area">
-        p seat: #{seat} out of : #{plimit}
-        p chips: #{wallet}
-        p dealer: #{dealer}
-        p minimum: #{min}
-        p maximum: #{max}
-        h3 Lobby
-        div(id='Lobby')
-            each person in lobby 
-                div(id='lobby')= person
-        h3 Players in game
-        div(id='Players')
-            each person in alive 
-                div(id='alive')= person
-        h3 Community Cards
-        div(id='Community')
-            if round == 1
-                each card in community.slice(0,3)
+        <div id="player-area">
+            h3 Players in game
+            div(id='Players')
+                each person in alive 
+                    div(id='alive')= person
+        </div>
+        <div id="lobby-area">
+            h3 Lobby
+            div(id='Lobby')
+                each person in lobby 
+                    div(id='lobby')= person
+        </div>
+        <div id="community-info">
+            p Dealer: #{dealer}
+            p Minimum bet: $#{min}
+            p Maximum bet: $#{max}
+            br
+            h3 Pot
+            div(id='Pot') $#{pot}
+            br
+            h3 Community Cards
+            div(id='Community')
+                if round == 1
+                    each card in community.slice(0,3)
+                        div(id='Card')= card
+                else if round == 2
+                    each card in community.slice(0,4)
+                        div(id='Card')= card 
+                else if round == 3
+                    each card in community
+                        div(id='Card')= card
+        </div>
+        <div id="personal-info">
+            h3 #{username}
+            p Seat: #{seat} out of #{plimit}
+            p Current cash: $#{wallet}
+            p(class="chips-label") Chips:&nbsp
+            div(id='Chips') #{chips}
+        </div>
+        <div id="personal-cards">
+            h3 Your hand:
+            div(id='Hand')
+                each card in hand 
                     div(id='Card')= card
-            else if round == 2
-                each card in community.slice(0,4)
-                    div(id='Card')= card 
-            else if round == 3
-                each card in community
-                    div(id='Card')= card
-        H3 Your hand:
-        div(id='Hand')
-            each card in hand 
-                div(id='Card')= card
-        h3 Pot
-        div(id='Pot') #{pot}
-        h3 Chips
-        div(id='Chips') #{chips}
-        label Actions:
-        div(id='Actions')
-            if callAmount != -2
-                br
-                label Call = #{callAmount}
-                input(type='number', name='bet', id='betInput', min=callAmount)
-                br
-                if callAmount != 0
-                    button(id='foldButton') Fold 
-            if round == -1 && seat == dealer+1
-                button(id='startGame') Start Game 
+        </div>
+        <div id="action-area">
+            label(class="actions-label") Actions:
+            div(id='Actions')
+                if callAmount != -2
+                    label(class="bet-label") Call: $#{callAmount}
+                    input(type='number', name='bet', id='betInput', min=callAmount, placeholder="Bet amount")
+                    br
+                    if callAmount != 0
+                        button(id='foldButton') Fold 
+                if round == -1 && seat == dealer+1
+                    button(id='startGame') Start Game 
+        </div>
     </div>
 
     <div id="game-chat-container">

@@ -2,6 +2,8 @@ html
   head
     title= title
     link(rel='stylesheet' href='/stylesheets/game.css')
+    link(rel='stylesheet' href='/stylesheets/cards.css')
+    script(src='/scripts/gameCard2.js', type="module", defer)
 
   body 
     <div id="header">
@@ -69,7 +71,8 @@ html
             h3 Your hand:
             div(id='Hand')
                 each card in hand 
-                    div(id='Card')= card
+                    div(id='Card', value=card)= card
+
         </div>
         <div id="action-area">
             label(class="actions-label") Actions:
@@ -95,3 +98,4 @@ html
     //- button(id='testButton') Test
 
     script(src='/scripts/gameSocket.bundle.js', defer)
+    

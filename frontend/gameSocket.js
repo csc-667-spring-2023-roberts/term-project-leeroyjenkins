@@ -11,6 +11,13 @@ socket.emit('join-seat', gameID, seat)
 socket.emit('join-game', gameID)
 console.log(`Joined seat: ${seat} gameID: ${gameID}`)
 
+const cardsOnPage = document.querySelectorAll('div#Card')
+cardsOnPage.forEach(card=>{
+    const c = addCard(card.innerHTML)
+    card.innerHTML=''
+    card.appendChild(c)
+})
+
 // document.getElementById('testButton').addEventListener('click',(event)=>{
 //     fetch(`/games/${gameID}/testSocket`,{
 //         method:"post",
@@ -142,12 +149,15 @@ socket.on(socketCalls.GAME_DEAL_CARDS, ({cards})=>{
     if(hand.hasChildNodes()){
         console.log('cards dealt already')
     }else{
-        const c1 = document.createElement('div')
-        c1.setAttribute('id', 'Card')
-        c1.innerHTML = cards[0]
-        const c2 = document.createElement('div')
-        c2.setAttribute('id', 'Card')
-        c2.innerHTML = cards[1]
+        // const c1 = document.createElement('div')
+        // c1.setAttribute('id', 'Card')
+        // c1.innerHTML = cards[0]
+        // const c2 = document.createElement('div')
+        // c2.setAttribute('id', 'Card')
+        // c2.innerHTML = cards[1]
+
+        const c1 = addCard(cards[0])
+        const c2 = addCard(cards[1])
         hand.appendChild(c1)
         hand.appendChild(c2)
     }
@@ -181,12 +191,14 @@ socket.on(socketCalls.ACTION_PAY_BIG_BLIND,({callAmount, cards})=>{
             action.innerHTML=''
             
             const hand = document.getElementById('Hand')
-            const c1 = document.createElement('div')
-            c1.setAttribute('id', 'Card')
-            c1.innerHTML=cards[0]
-            const c2 = document.createElement('div')
-            c2.setAttribute('id','Card')
-            c2.innerHTML=cards[1]
+            // const c1 = document.createElement('div')
+            // c1.setAttribute('id', 'Card')
+            // c1.innerHTML=cards[0]
+            // const c2 = document.createElement('div')
+            // c2.setAttribute('id','Card')
+            // c2.innerHTML=cards[1]
+            const c1 = addCard(cards[0])
+            const c2 = addCard(cards[1])
             hand.appendChild(c1)
             hand.appendChild(c2)
             
@@ -279,12 +291,14 @@ socket.on(socketCalls.GAME_ENDS_SHOW_CARDS, ({remaining})=>{
         let name = div.innerHTML
         for(var key in remaining){
             if(name === key){
-                const c1 = document.createElement('div')
-                c1.setAttribute('id', 'Card')
-                const c2 = document.createElement('div')
-                c2.setAttribute('id', 'Card')
-                c1.innerHTML = remaining[key][0]
-                c2.innerHTML = remaining[key][1]
+                // const c1 = document.createElement('div')
+                // c1.setAttribute('id', 'Card')
+                // const c2 = document.createElement('div')
+                // c2.setAttribute('id', 'Card')
+                // c1.innerHTML = remaining[key][0]
+                // c2.innerHTML = remaining[key][1]
+                const c1 = addCard(remaining[key][0])
+                const c2 = addCard(remaining[key][1])
                 div.appendChild(c1)
                 div.appendChild(c2)
             }
@@ -296,17 +310,20 @@ socket.on(socketCalls.GAME_FLOP, ({cards})=>{
     const community = document.getElementById('Community')
     community.innerHTML=''
     
-    const c1 = document.createElement('div')
-    c1.setAttribute('id', 'Card')
-    c1.innerHTML = cards[0]
+    // const c1 = document.createElement('div')
+    // c1.setAttribute('id', 'Card')
+    // c1.innerHTML = cards[0]
 
-    const c2 = document.createElement('div')
-    c2.setAttribute('id', 'Card')
-    c2.innerHTML = cards[1]
+    // const c2 = document.createElement('div')
+    // c2.setAttribute('id', 'Card')
+    // c2.innerHTML = cards[1]
 
-    const c3 = document.createElement('div')
-    c3.setAttribute('id', 'Card')
-    c3.innerHTML = cards[2]
+    // const c3 = document.createElement('div')
+    // c3.setAttribute('id', 'Card')
+    // c3.innerHTML = cards[2]
+    const c1 = addCard(cards[0])
+    const c2 = addCard(cards[1])
+    const c3 = addCard(cards[2])
     community.appendChild(c1)
     community.appendChild(c2)
     community.appendChild(c3)
@@ -314,9 +331,10 @@ socket.on(socketCalls.GAME_FLOP, ({cards})=>{
 
 socket.on(socketCalls.GAME_TURN_RIVER, ({card})=>{
     const community = document.getElementById('Community')
-    const c = document.createElement('div')
-    c.setAttribute('id', 'Card')
-    c.innerHTML = card
+    // const c = document.createElement('div')
+    // c.setAttribute('id', 'Card')
+    // c.innerHTML = card
+    const c = addCard(card)
     community.appendChild(c)
 })
 
@@ -341,3 +359,93 @@ socket.on(socketCalls.GAME_UPDATE_PLAYER_CASH,({cash})=>{
 
 
 
+
+function addCard(cardString){
+    console.log("cardString: " + cardString)
+    const newCard = document.createElement("div");
+    newCard.classList.add("card");
+
+    newCard.setAttribute('id', 'Card')
+
+    let card = getCard(cardString);
+    newCard.setAttribute("data-suit", card.pip);
+    newCard.setAttribute("data-value", card.number);
+
+    addCardElements(newCard);
+    return newCard;
+}
+
+function addCardElements(card) {
+    const value = card.dataset.value;
+
+    const valueAsNumber = parseInt(value);
+    if (isNaN(valueAsNumber)) {
+        if (value === "A") card.append(createPip());
+        else {
+        card.append(createPip());
+        }
+    } else {
+        for (let i = 0; i < valueAsNumber; i++) card.append(createPip());
+    }
+
+    if (value !== "unknown") {
+        card.append(createCornerNumber("top", value));
+        card.append(createCornerNumber("bottom", value));
+    }
+}
+  
+function createCornerNumber(position, value) {
+    const corner = document.createElement("div");
+    corner.textContent = value;
+    corner.classList.add("corner-number");
+    corner.classList.add(position);
+    return corner;
+}
+
+function createPip() {
+    const pip = document.createElement("div");
+    pip.classList.add("pip");
+    return pip;
+}
+
+function getCard(cardString) {
+    let number = "";
+    let pip = "";
+    if (cardString === "unknown") {
+        number = cardString;
+        pip = cardString;
+    } else {
+        number = cardString.charAt(0);
+        pip = getPip(cardString.charAt(1));
+    }
+
+    var card = {
+        number: number,
+        pip: pip,
+    };
+
+    return card;
+}
+
+function getPip(pip) {
+    let result = "";
+    switch (pip) {
+        case "D":
+        result = "diamond";
+        break;
+        case "H":
+        result = "heart";
+        break;
+        case "S":
+        result = "spade";
+        break;
+        case "C":
+        result = "club";
+        break;
+        default:
+        result = "unknown";
+    }
+
+    return result;
+}
+  

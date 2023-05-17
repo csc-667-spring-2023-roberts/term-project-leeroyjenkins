@@ -291,16 +291,13 @@ socket.on(socketCalls.GAME_ENDS_SHOW_CARDS, ({remaining})=>{
         let name = div.innerHTML
         for(var key in remaining){
             if(name === key){
-                // const c1 = document.createElement('div')
-                // c1.setAttribute('id', 'Card')
-                // const c2 = document.createElement('div')
-                // c2.setAttribute('id', 'Card')
-                // c1.innerHTML = remaining[key][0]
-                // c2.innerHTML = remaining[key][1]
+                const handDiv = document.createElement('div')
+                handDiv.setAttribute('id','Hand')
                 const c1 = addCard(remaining[key][0])
                 const c2 = addCard(remaining[key][1])
-                div.appendChild(c1)
-                div.appendChild(c2)
+                handDiv.appendChild(c1)
+                handDiv.appendChild(c2)
+                div.appendChild(handDiv)
             }
         }
     })

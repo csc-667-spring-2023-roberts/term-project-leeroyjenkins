@@ -210,6 +210,16 @@ form{
     margin: 0;
 }
 
+#Community{
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+#Hand{
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
 #personal-info{
     position: absolute;
     width: 20%;

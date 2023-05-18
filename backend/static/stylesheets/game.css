@@ -217,7 +217,8 @@ form{
 
 #Hand{
     display: grid;
-    grid-template-columns: auto auto auto;
+    margin-left: 5em;
+    grid-template-columns: auto auto;
 }
 
 #personal-info{
@@ -278,8 +279,9 @@ form{
 #Hand div{
     margin-top: 0;
     margin-bottom: 0;
-    padding: 0;
-    margin-left: 1rem;
+    /* padding: 0; */
+    /* margin-left: 1rem; */
+    
 }
 
 #action-area{

@@ -10,7 +10,7 @@ body {
 }
 
 .card {
-  --width: 8em;
+  --width: 6em;
   --height: calc(var(--width) * 1.4);
   --border-radius: calc(var(--width) * 0.05);
   --padding: calc(var(--width) * 0.17);
@@ -450,7 +450,7 @@ body {
 
 .display {
   padding-left: 10%;
-  display: grid;
+  /* display: grid; */
   grid-template-columns: repeat(11, calc(100vw / 11));
   grid-template-rows: repeat(5, calc(90vh / 5));
 }

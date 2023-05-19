@@ -42,6 +42,7 @@ body {
     padding: 2%;
     display: grid;
     grid-template-rows: auto;
+    border-radius: 1rem;
 }
 
 input{
@@ -64,7 +65,7 @@ button{
 
 button:hover{
     background: rgb(226,175,70);
-    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(225,144,22,1) 100%);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
 }
 
 h1{

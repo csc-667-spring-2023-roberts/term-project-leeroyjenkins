@@ -120,14 +120,14 @@ form{
 
 #player-area{
     position: absolute;
-    width: 70%;
+    width: 66%;
     height: 20%;
     overflow-wrap: break-word;
     resize: none;
     top: 3rem;
     margin: 0;
     padding: 0;
-    left: 0;
+    left: 2%;
     border: solid black 1px;
     border-radius: 0 0 1rem 1rem;
     background-color: rgb(255, 255, 255, .3);

@@ -141,6 +141,7 @@ form{
     padding: 0;
     height: 20%;
     text-align: center;
+    padding-top: 0.5rem;
 }
 
 #Players{
@@ -171,6 +172,7 @@ form{
     margin: 0;
     left: 0;
     border: solid black 1px;
+    border-radius: 0 0.75rem 0.75rem 0;
     background-color: rgb(255, 255, 255, .3);
     overflow-y: auto;
 }
@@ -200,6 +202,7 @@ form{
     padding: 0;
     left: 15%;
     border: solid black 1px;
+    border-radius: 0.75rem;
     background-color: rgb(255, 255, 255, .3);
     overflow-y: auto;
 }
@@ -219,8 +222,9 @@ form{
 }
 
 #Community{
-    display: grid;
-    grid-template-columns: auto auto auto;
+    display: flex;
+    justify-content: space-evenly;
+    padding-top: 0.5rem;
 }
 
 #Hand{

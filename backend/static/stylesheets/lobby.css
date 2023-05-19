@@ -49,7 +49,8 @@ body {
 }
 
 #logout{
-    padding-right: 1rem;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
     cursor: pointer;
     margin: 0;
     position: absolute;
@@ -57,6 +58,13 @@ body {
     left: 90%;
     transform: translateY(-50%);
     white-space: nowrap;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+}
+
+#logout:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
 }
 
 #game-rooms{

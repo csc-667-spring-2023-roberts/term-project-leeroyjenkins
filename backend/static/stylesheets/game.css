@@ -305,7 +305,6 @@ form{
     padding: 0;
     left: 22%;
     border: solid black 1px;
-    border-radius: 0.75rem 0.75rem 0 0;
     background-color: rgb(255, 255, 255, .3);
     overflow: auto;
 }

@@ -1,9 +1,101 @@
-html 
-    head 
-        title Game 
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/game.css')
+    link(rel='stylesheet' href='/stylesheets/cards.css')
 
-    body 
-        h1 Game 
+  body 
+    <div id="header">
+        <a href=/home id="logo-link">
+            <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
+        </a>
+        <div>
+            form(id='seatValue')
+                input(type='hidden', name='seatVal',value=`${seat}`)
+            form(action=`/games/${gameID}/leave`, method='post')
+                button(type='submit' id="leave-game-button" class="leave-button") Leave game room
+            form(action='/home', method='get')
+                button(type='submit' id="lobby-button" class="leave-button") Back to lobby
+        </div>
+        <h2 id="username">#{username}</h2>
+        <div>
+            <form action='/home/logout' method='post'>
+            <button type='submit' id="logout"> Log Out </button>
+            </form>
+        </div>
+    </div>
 
-        form(action=`/games/${gameID}/leave`, method='post')
-            button(type='submit') Leave 
+    <div id="game-area">
+        <div id="player-area">
+            h3 Players in game
+            div(id='Players')
+                each person in alive 
+                    div(id='alive')= person
+                        div(id='aliveCards')
+        </div>
+        <div id="lobby-area">
+            h3 Lobby
+            div(id='Lobby')
+                each person in lobby 
+                    div(id='lobby')= person
+        </div>
+        <div id="community-info">
+            p Dealer: #{dealer}
+            p Minimum bet: $#{min}
+            p Maximum bet: $#{max}
+            br
+            h3 Pot
+            div(id='Pot') $#{pot}
+            br
+            h3 Community Cards
+            div(id='Community')
+                if round == 1
+                    each card in community.slice(0,3)
+                        div(id='Card')= card
+                else if round == 2
+                    each card in community.slice(0,4)
+                        div(id='Card')= card 
+                else if round == 3
+                    each card in community
+                        div(id='Card')= card
+        </div>
+        <div id="personal-info">
+            h3 #{username}
+            p Seat: #{seat} out of #{plimit}
+            p(class="chips-label") Current cash: &nbsp 
+            div(id='Wallet') #{wallet}
+            p(class="chips-label") Chips:&nbsp
+            div(id='Chips') #{chips}
+        </div>
+        <div id="personal-cards">
+            h3 Your hand:
+            div(id='Hand')
+                each card in hand 
+                    div(id='Card', value=card)= card
+
+        </div>
+        <div id="action-area">
+            label(class="actions-label") Actions:
+            div(id='Actions')
+                if callAmount != -2
+                    label(class="bet-label") Call: $#{callAmount}
+                    input(type='number', name='bet', id='betInput', min=callAmount, placeholder="Bet amount")
+                    br
+                    if callAmount != 0
+                        button(id='foldButton') Fold 
+                if round == -1 && seat == dealer+1
+                    button(id='startGame') Start Game 
+        </div>
+    </div>
+
+    <div id="game-chat-container">
+      <div id="System"></div>
+      <label>
+        <textarea id='gameChatMessage', name='game-chat-message', placeholder='Message...'></textarea>
+      </label>
+    </div>
+
+    //- button(id='testButton') Test
+
+    script(src='/scripts/gameSocket.bundle.js', defer)
+    

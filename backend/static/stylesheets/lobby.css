@@ -1,0 +1,177 @@
+body {
+    background: rgb(199,182,255);
+    background: radial-gradient(circle, rgba(199,182,255,1) 0%, rgba(151,115,200,1) 100%);
+    display: grid;
+    grid-template-columns: 75% 25%;
+    grid-template-rows: 3rem auto;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#header{
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+    position: relative;
+    border: solid black 1px;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 50% 40% 10%;
+    background-color: black;
+}
+
+#logo-picture{
+    height: 32px;
+    width: 32px;
+    border: solid white 1px;
+    margin-right: 3pt;
+}
+
+#logo-link{
+    text-decoration: none;
+    align-self: center;
+    padding-left: 1rem;
+    font-size: 2rem;
+    color: white;
+    white-space: nowrap;
+    display: flex;
+    align-content: center;
+}
+
+#username{
+    color: white;
+    text-align: right;
+    padding-right: 2rem;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#logout{
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+    cursor: pointer;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 90%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+}
+
+#logout:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
+}
+
+#game-rooms{
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    border: solid black 1px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+#error-message{
+    text-align: center;
+    font-size: 2rem;
+    color: red;
+}
+
+#balance{
+    margin: 0;
+    text-align: right;
+    padding-right: 1rem;
+    padding-top: 0.75rem;
+}
+
+h1{
+    margin: 0;
+    text-align: center;
+}
+
+table{
+    margin: 0;
+    width: 100%;
+    padding: 1rem;
+    table-layout: fixed;
+    border-spacing: 0px;
+}
+
+td{
+    width: auto;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    border: solid black 1px;
+}
+
+.join-form{
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#new-game-form{
+    text-align: center;
+}
+
+#new-game-button{
+    font-size: 2rem;
+    font-family: "Times New Roman", Times, serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+}
+
+#new-game-button:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
+}
+
+#lobby-chat-container{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    border: solid black 1px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#lobby-messages{
+    height: 90%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.lobby-message{
+    width: 100%;
+    overflow-wrap: break-word;
+    padding: 1%;
+}
+
+#lobby-chat-input{
+    position: absolute;
+    width: 30%;
+    height: 10%;
+    overflow-wrap: break-word;
+    resize: none;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid black;
+    padding-left: 0.25rem;
+    padding-top: 0.25rem;
+}

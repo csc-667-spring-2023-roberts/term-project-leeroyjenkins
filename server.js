@@ -15,14 +15,13 @@ const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
 const db = require("./backend/db/connection.js")
 
-
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 const sessionMiddleware = session({
-  store: new pgSession({pgPromise: db, tableName: 'sessions'}),
+  store: new pgSession({pgPromise: db}),
   secret: 'secret',
   resave: false,
   saveUninitialized: false,
@@ -48,6 +47,7 @@ if (process.env.NODE_ENV === "development") {
   
   app.use(connectLiveReload());
 }
+
 app.use(express.json())
 app.set("views", path.join(__dirname, "backend", "views"));
 app.set("view engine", "pug");
@@ -56,18 +56,26 @@ app.use(requestTime);
 
 const PORT = process.env.PORT || 3002;
 
+const initSockets = require('./backend/sockets/initialize.js')
+const server = initSockets(app, sessionMiddleware)
+
+const isAuth = require('./backend/middleware/isAuth')
+const isNotAuth = require('./backend/middleware/isNotAuth')
 const rootRoutes = require("./backend/routes/root")
 const homeRoutes = require('./backend/routes/home.js')
 const gamesRoutes = require('./backend/routes/games')
+const chatRoutes = require('./backend/routes/chat')
 
-app.use("/", rootRoutes)
-app.use('/home', homeRoutes)
-app.use('/games', gamesRoutes)
+app.use("/", isNotAuth, rootRoutes)
+app.use('/home', isAuth, homeRoutes)
+app.use('/games', isAuth, gamesRoutes)
+app.use('/chat', chatRoutes)
 
-// app.use((request, response, next) => {
-//   next(createError(404));
-// });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
+});
+
+app.use((request, response, next) => {
+  next(createError(404));
 });

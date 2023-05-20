@@ -1,0 +1,459 @@
+body {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 3rem auto;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#header{
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+    position: relative;
+    border: solid black 1px;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 30% 50% 10% 10%;
+    background-color: black;
+}
+
+#logo-picture{
+    height: 32px;
+    width: 32px;
+    border: solid white 1px;
+    margin-right: 3pt;
+}
+
+#logo-link{
+    text-decoration: none;
+    align-self: center;
+    padding-left: 1rem;
+    font-size: 2rem;
+    color: white;
+    white-space: nowrap;
+    display: flex;
+    align-content: center;
+}
+
+#username{
+    color: white;
+    text-align: right;
+    padding-right: 2rem;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#logout{
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    margin: 0;
+    position: absolute;
+    height: 60%;
+    top: 50%;
+    left: 90%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+}
+
+#logout:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
+}
+
+#game-area{
+    background: rgb(199,182,255);
+    background: radial-gradient(circle, rgba(199,182,255,1) 0%, rgba(151,115,200,1) 100%);
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    border: solid black 1px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+form{
+    width: 100%;
+    height: 100%;
+}
+
+#leave-game-button{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    transform: translateY(-50%);
+}
+
+#lobby-button{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 60%;
+    transform: translateY(-50%);
+}
+
+.leave-button{
+    width:10%;
+    height: 50%;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: solid white 1px
+}
+
+.leave-button:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(225,144,22,1) 100%);
+}
+
+#player-area{
+    position: absolute;
+    width: 66%;
+    height: 20%;
+    overflow-wrap: break-word;
+    resize: none;
+    top: 3rem;
+    margin: 0;
+    padding: 0;
+    left: 2%;
+    border: solid black 1px;
+    border-radius: 0 0 1rem 1rem;
+    background-color: rgb(255, 255, 255, .3);
+    overflow-y: auto;
+}
+
+#player-area::-webkit-scrollbar { 
+    display: none;
+}
+
+#player-area h3{
+    text-transform: capitalize;
+    margin: 0;
+    padding: 0;
+    height: 20%;
+    text-align: center;
+    padding-top: 0.5rem;
+}
+
+#Players{
+    margin: 0;
+    padding: 0;
+    height: 80%;
+    display: grid;
+    grid-template-rows: 1fr;
+    border: solid black 1px;
+    overflow-x: auto;
+}
+
+#Players > div{
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    border: solid black 1px;
+    grid-row: 1 / span 1;
+    width: auto;
+    min-width: 20rem;
+}
+
+#lobby-area{
+    position: absolute;
+    width: 10%;
+    height: 45%;
+    overflow-wrap: break-word;
+    resize: none;
+    top: 30%;
+    margin: 0;
+    left: 0;
+    border: solid black 1px;
+    border-radius: 0 0.75rem 0.75rem 0;
+    background-color: rgb(255, 255, 255, .3);
+    overflow-y: auto;
+}
+
+#lobby-area h3{
+    margin-top: 5%;
+    margin-bottom: 5%;
+    padding: 0;
+    text-align: center;
+}
+
+#Lobby div{
+    margin-top: 3%;
+    margin-bottom: 3%;
+    padding: 0;
+    margin-left: 1rem;
+}
+
+#community-info{
+    position: absolute;
+    width: 35%;
+    height: 45%;
+    overflow-wrap: break-word;
+    resize: none;
+    top: 30%;
+    margin: 0;
+    padding: 0;
+    left: 15%;
+    border: solid black 1px;
+    border-radius: 0.75rem;
+    background-color: rgb(255, 255, 255, .3);
+    overflow-y: auto;
+}
+
+#community-info *{
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 1rem;
+}
+
+#community-info p:first-child{
+    margin-top: 5%;
+}
+
+#Community div{
+    margin: 0;
+}
+
+#Community{
+    display: flex;
+    justify-content: space-evenly;
+    padding-top: 0.5rem;
+}
+
+#community-info::-webkit-scrollbar{
+    height: 5px;
+}
+
+#community-info::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+    width: 90%;
+}
+
+#community-info::-webkit-scrollbar-thumb{
+    height: 5px;
+    background-color: black;
+}
+
+#community-info::-webkit-scrollbar-thumb:hover {
+    background-color: grey;
+    cursor:pointer;
+}
+
+#community-info::-webkit-scrollbar:vertical {
+    display: none;
+}
+
+#Hand{
+    display: flex;
+    justify-content: space-evenly;
+    margin-left: 5em;
+}
+
+#personal-info{
+    position: absolute;
+    width: 20%;
+    height: 20%;
+    overflow-wrap: break-word;
+    resize: none;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    left: 2%;
+    border: solid black 1px;
+    border-radius: 0.75rem 0 0 0;
+    background-color: rgb(255, 255, 255, .3);
+    overflow-y: auto;
+}
+
+#personal-info *{
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+    margin-left: 1rem;
+}
+
+#personal-info h3{
+    margin-top: 3%;
+    margin-bottom: 1%;
+    padding: 0;
+    margin-left: 1rem;
+}
+
+.chips-label{
+    float: left;
+}
+
+#personal-cards{
+    position: absolute;
+    width: 26%;
+    height: 20%;
+    overflow-wrap: break-word;
+    resize: none;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    left: 22%;
+    border: solid black 1px;
+    background-color: rgb(255, 255, 255, .3);
+    overflow: auto;
+}
+
+#personal-cards h3{
+    text-transform: capitalize;
+    margin-top: 5%;
+    margin-bottom: 0;
+    padding: 0;
+    margin-left: 1rem;
+}
+
+#Hand div{
+    margin-top: 0;
+    margin-bottom: 0;
+    /* padding: 0; */
+    /* margin-left: 1rem; */
+    
+}
+
+#action-area{
+    position: absolute;
+    width: 20%;
+    height: 20%;
+    overflow-wrap: break-word;
+    resize: none;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    left: 48%;
+    border: solid black 1px;
+    border-radius: 0rem 0.75rem 0 0;
+    background-color: rgb(255, 255, 255, .3);
+}
+
+.actions-label{
+    display: inline-block;
+    width: 80%;
+    height: 30%;
+    margin-left: 1rem;
+    padding-top: 0.7rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#actions{
+    margin: 0;
+    padding: 0;
+    height: 60%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+#actions::-webkit-scrollbar { 
+    display: none;
+}
+
+.bet-label{
+    margin-left: 1rem;
+}
+
+#betInput{
+    background: linear-gradient(rgba(148,119,249,1) 0%, rgba(106,49,185,1) 100%) bottom / 0 10% no-repeat;
+    transition: 1s;
+    border: none;
+    border-bottom: solid black 1px;
+    margin-left: 0.5rem;
+}
+
+#betInput:focus{
+    outline: none;
+    background-size: 100% 3px;
+}
+
+#foldButton{
+    width:80%;
+    height: auto;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: solid white 1px;
+    margin: 5%;
+}
+
+#foldButton:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(225,144,22,1) 100%);
+}
+
+#startGame{
+    width:80%;
+    height: auto;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: solid white 1px;
+    margin: 5%;
+}
+
+#startGame:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(225,144,22,1) 100%);
+}
+
+#game-chat-container{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    border: solid black 1px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#System{
+    height: 90%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.game-message{
+    width: 100%;
+    overflow-wrap: break-word;
+    padding: 1%;
+}
+
+#gameChatMessage{
+    position: absolute;
+    width: 30%;
+    height: 10%;
+    overflow-wrap: break-word;
+    resize: none;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+}

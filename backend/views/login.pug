@@ -1,21 +1,28 @@
-html 
-    head 
-        title Login 
-        link(rel='stylesheet' href='/stylesheets/home.css')
-        script(src="/scripts/bundle.js")
-    body 
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/authentication.css')
+
+  body
+    <div id="icon-container">
+        <img src="card_icon.jpg" alt="Card" id="icon-picture">
+        <h1 id="icon-name"> Texas Hold'em Poker </h1>
+    </div>
+    
+    <div id="auth-container">
         h1 Log In 
         form(action='/login', method='post')
             label(for='email') Email: 
             input(type='text', id='email', name='email', required)
-            br
+            
             label(for='password') Password:
-            input(type='type', id='password', name='password', required)
-            br
+            input(type='password', id='password', name='password', required)
+
+            p(id="error-message")=message
+            
             button(type='submit') Log In 
-        
-        form(action='/', method='get')
-            button(type='submit') Home 
-        
+            
+        h3 Don't have an account?
         form(action='/register', method='get')
             button(type='submit') Register
+    </div>

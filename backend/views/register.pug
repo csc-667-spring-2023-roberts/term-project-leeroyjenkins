@@ -1,25 +1,31 @@
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/authentication.css')
 
-html 
-    head 
-        title Register 
-        link(rel='stylesheet' href='/stylesheets/home.css')
-        script(src="/scripts/bundle.js")
-    body 
+  body
+    <div id="icon-container">
+        <img src="card_icon.jpg" alt="Card" id="icon-picture">
+        <h1 id="icon-name"> Texas Hold'em Poker </h1>
+    </div>
+
+    <div id="auth-container">
         h1 Register 
         form(action='/register', method='post')
             label(for='username') Username: 
             input(type='text', id='username', name='username', required)
-            br
+            
             label(for='email') Email: 
             input(type='text', id='email', name='email', required)
-            br
+            
             label(for='password') Password: 
-            input(type='text', id='password', name='password', required)
-            br
+            input(type='password', id='password', name='password', required)
+
+            p(id="error-message")=message
+            
             button(type='submit') Register 
         
-        form(action='/', method='get')
-            button(type='submit') Home
-        
+        h3 Already have an account?
         form(action='/login', method='get')
             button(type='submit') Login
+    </div>

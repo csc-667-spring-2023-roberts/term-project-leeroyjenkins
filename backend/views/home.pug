@@ -1,25 +1,79 @@
 html
   head
     title= title
-    link(rel='stylesheet' href='/stylesheets/home.css')
-    script(src="/scripts/homeJS.js")
+    link(rel='stylesheet' href='/stylesheets/lobby.css')
+    script(src='/scripts/gameTable.js', defer)
+    script(src='/scripts/homeChat.bundle.js', defer)
 
   body 
-    form(action='/home/logout', method='post')
-      button(type='submit') Log Out 
-    
-    h1 Game Table
-    table
-      thead
-        tr
-          th Minimum
-          th Maximum
-          th Players
-      tbody
-        each game in games
-          tr(id=game.id, onclick=`handleGameOnClick(event)`)
-            td= game.minimum
-            td= game.maximum
-            td= game.count
+    <div id="header">
+      <a href=/home id="logo-link">
+        <img src="card_icon.jpg" alt="Card" id="logo-picture">Texas Hold'em Poker
+      </a>
+
+      <h2 id="username">#{username}</h2>
+      <div>
+        <form action='/home/logout' method='post'>
+          <button type='submit' id="logout"> Log Out </button>
+        </form>
+      </div>
+    </div>
+
+    div(id="game-rooms")
+      h2(id="balance") Current Balance: $#{wallet}
+      
+      form(action='/games/createTable', method='get' id='new-game-form')
+        button(type='submit' id='new-game-button') Create New Game
+
+      h1 Ongoing Games
+      p(id="error-message")=message
+      table
+        thead
+          tr
+            th Room Name
+            th Minimum Bet
+            th Maximum Bet
+            th Players
+            th Limit
+            th Join
+        tbody(id='GameTableBody')
+          each game in games
+            tr(id=game.id)
+              td= game.name
+              td= game.minimum
+              td= game.maximum
+              td= game.count
+              td= game.plimit
+              td
+                form(action=`/games/${game.id}`, method='post' class='join-form')
+                  button(type='submit') Join
+      
+      h1 Personal Games
+      table 
+        thead 
+          tr
+            th Room Name
+            th Minimum Bet
+            th Maximum Bet
+            th Players
+            th Limit
+            th Join
+        tbody
+          each pgame in pgames
+            tr(id=pgame.id)
+              td= pgame.name
+              td= pgame.minimum
+              td= pgame.maximum
+              td= pgame.count
+              td= pgame.plimit
+              td 
+                form(action=`/games/${pgame.id}`, method='post' class='join-form')
+                  button(type='submit') Join
+
+    <div id="lobby-chat-container">
+      <div id="lobby-messages"></div>
+      <label>
+        <textarea id="lobby-chat-input" name="lobby-chat-message" placeholder="Message..."></textarea>
+      </label>
+    </div>
             
-  

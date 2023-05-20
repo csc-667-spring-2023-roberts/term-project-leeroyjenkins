@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../backend/static//stylesheets/cards.css" />
+    <script type="module" src="./scripts/cards-controller.js"></script>
+  </head>
+  <body>
+    <button class="button" argument="1, 2H">player 1: add card</button>
+    <button class="button" argument="2, 2H">player 2: add card</button>
+    <button class="button" argument="3, 2H">player 3: add card</button>
+    <button class="button" argument="4, 2H">player 4: add card</button>
+    <button class="button" argument="5, 2H">player 5: add card</button>
+    <button class="button" argument="6, 2H">player 6: add card</button>
+    <button class="button" argument="community, 3D">community: add card</button>
+    <button class="button" argument="">new player</button>
+    <div class="display">
+      <div class="community_cards">
+        <div class="hand"></div>
+      </div>
+      <div class="player_1">
+        <div class="hand">
+          <div class="card" data-suit="heart" data-value="4"></div>
+        </div>
+      </div>
+    </div>
+    <button class="button" argument="1">player 1: remove card</button>
+    <button class="button" argument="2">player 2: remove card</button>
+    <button class="button" argument="3">player 3: remove card</button>
+    <button class="button" argument="4">player 4: remove card</button>
+    <button class="button" argument="5">player 5: remove card</button>
+    <button class="button" argument="6">player 6: remove card</button>
+    <button class="button" argument="community">community: remove card</button>
+  </body>
+</html>

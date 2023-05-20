@@ -378,8 +378,6 @@ function addCardElements(card) {
   const valueAsNumber = parseInt(value);
   if (isNaN(valueAsNumber)) {
     if (value === "A") card.append(createPip());
-    else if (value === "T")
-      for (let i = 0; i < 10; i++) card.append(createPip());
     else {
       card.append(createPip());
     }
@@ -414,7 +412,8 @@ function getCard(cardString) {
     number = cardString;
     pip = cardString;
   } else {
-    number = cardString.charAt(0);
+    if (cardString.charAt(0) === "T") number = "10";
+    else number = cardString.charAt(0);
     pip = getPip(cardString.charAt(1));
   }
 

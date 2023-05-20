@@ -257,7 +257,6 @@ form{
 #Hand{
     display: flex;
     justify-content: space-evenly;
-    margin-left: 5em;
 }
 
 #personal-info{

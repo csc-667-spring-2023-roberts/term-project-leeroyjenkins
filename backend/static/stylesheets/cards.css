@@ -13,7 +13,7 @@ body {
   --width: 6em;
   --height: calc(var(--width) * 1.4);
   --border-radius: calc(var(--width) * 0.05);
-  --padding: calc(var(--width) * 0.17);
+  --padding: calc(var(--width) * 0.2);
   width: var(--width);
   height: var(--height);
   background-color: white;

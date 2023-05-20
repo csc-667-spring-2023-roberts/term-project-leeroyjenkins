@@ -2,7 +2,7 @@ body {
     background: rgb(199,182,255);
     background: radial-gradient(circle, rgba(199,182,255,1) 0%, rgba(151,115,200,1) 100%);
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 75% 25%;
     grid-template-rows: 3rem auto;
     height: 100%;
     width: 100%;
@@ -49,13 +49,22 @@ body {
 }
 
 #logout{
-    padding-right: 1rem;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+    cursor: pointer;
     margin: 0;
     position: absolute;
     top: 50%;
     left: 90%;
     transform: translateY(-50%);
     white-space: nowrap;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+}
+
+#logout:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
 }
 
 #game-rooms{
@@ -79,6 +88,7 @@ body {
     margin: 0;
     text-align: right;
     padding-right: 1rem;
+    padding-top: 0.75rem;
 }
 
 h1{
@@ -114,6 +124,17 @@ td{
 
 #new-game-button{
     font-size: 2rem;
+    font-family: "Times New Roman", Times, serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    background: rgb(246,195,90);
+    background: radial-gradient(circle, rgba(246,195,90,1) 0%, rgba(255,164,42,1) 100%);
+}
+
+#new-game-button:hover{
+    background: rgb(226,175,70);
+    background: radial-gradient(circle, rgba(226,175,70,1) 0%, rgba(255,144,22,1) 100%);
 }
 
 #lobby-chat-container{
@@ -150,4 +171,7 @@ td{
     bottom: 0;
     margin: 0;
     padding: 0;
+    border-top: 1px solid black;
+    padding-left: 0.25rem;
+    padding-top: 0.25rem;
 }

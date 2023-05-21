@@ -13,7 +13,7 @@ body {
   --width: 6em;
   --height: calc(var(--width) * 1.4);
   --border-radius: calc(var(--width) * 0.05);
-  --padding: calc(var(--width) * 0.2);
+  --padding: calc(var(--width) * 0.24);
   width: var(--width);
   height: var(--height);
   background-color: white;
@@ -21,7 +21,7 @@ body {
   padding: var(--padding);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(8, 1fr);
+  grid-template-rows: repeat(7, 1fr);
   position: relative;
 }
 

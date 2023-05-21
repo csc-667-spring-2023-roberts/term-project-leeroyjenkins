@@ -12,16 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.querySelector("#lobby-chat-input");
     if(input){
       input.addEventListener("keydown", (event) => {
-        if (event.keyCode === 13) {
+        if (event.keyCode === 13 && input.value.trim() !== "") {
           event.preventDefault();
-          const message = event.target.value;
+          const message = event.target.value.trim();
           event.target.value = "";
-    
-          fetch('/chat/',{
-            method:"post",
-            headers:{"Content-Type": "application/json"},
-            body: JSON.stringify({message}),
-        })
+
+          fetch("/chat/", {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          });
         }
       });
     }
@@ -44,15 +44,15 @@ socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({username, message, timestamp}) =>
     const entry = document.createElement('div');
     entry.setAttribute('class', 'lobby-message')
 
-    const displayName = document.createElement('span')
-    displayName.innerText = username + ":"
-    const displayMessage = document.createElement('span')
-    displayMessage.innerText = message
-    const displayTimestamp = document.createElement('span')
-    displayTimestamp.innerText = " " + new Date(timestamp).toLocaleString()
-    displayTimestamp.style.fontSize = "9pt";
+    const displayMessage = document.createElement("span");
+    displayMessage.classList.add("message");
+    displayMessage.innerText = username + ": " + message;
 
-    entry.append(displayName,displayMessage,displayTimestamp)
+    const displayTimestamp = document.createElement("span");
+    displayTimestamp.classList.add("timestamp");
+    displayTimestamp.innerText = " " + new Date(timestamp).toLocaleString();
+
+    entry.append(displayMessage, displayTimestamp);
     messageContainer.appendChild(entry)
     messageContainer.lastChild.scrollIntoView();
 })

@@ -68,15 +68,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.querySelector("#gameChatMessage");
     if(input){
       input.addEventListener("keydown", (event) => {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            const message = event.target.value;
-            event.target.value=""
-            fetch(`/chat/game/${gameID}`,{
-                method:"post",
-                headers:{"Content-Type": "application/json"},
-                body: JSON.stringify({message}),
-            })
+        if (event.keyCode === 13 && input.value.trim() !== "") {
+          event.preventDefault();
+          const message = event.target.value.trim();
+          event.target.value = "";
+          fetch(`/chat/game/${gameID}`, {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          });
         }
       });
     }

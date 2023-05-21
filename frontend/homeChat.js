@@ -12,16 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.querySelector("#lobby-chat-input");
     if(input){
       input.addEventListener("keydown", (event) => {
-        if (event.keyCode === 13) {
+        if (event.keyCode === 13 && input.value.trim() !== "") {
           event.preventDefault();
-          const message = event.target.value;
+          const message = event.target.value.trim();
           event.target.value = "";
-    
-          fetch('/chat/',{
-            method:"post",
-            headers:{"Content-Type": "application/json"},
-            body: JSON.stringify({message}),
-        })
+
+          fetch("/chat/", {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          });
         }
       });
     }

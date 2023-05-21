@@ -20,7 +20,10 @@ router.post('/game/:gameID',(req,res)=>{
     const {gameID} = req.params;
 
     const m = `${username}: ${message}`
-    io.to(`game-${gameID}`).emit(constants.SYSTEM_MESSAGE_RECEIVED,{message: m, timestamp: Date.now()})
+    io.to(`game-${gameID}`).emit(constants.CHAT_MESSAGE_RECEIVED, {
+      message: m,
+      timestamp: Date.now(),
+    });
 
     res.status(200).json({message: "Success"})
 })

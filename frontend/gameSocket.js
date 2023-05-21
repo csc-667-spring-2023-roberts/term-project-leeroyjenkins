@@ -82,25 +82,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({message, timestamp})=>{
-    const systemMessageContainer = document.querySelector('#System')
+socket.on(socketCalls.SYSTEM_MESSAGE_RECEIVED, ({ message, timestamp }) => {
+  const systemMessageContainer = document.querySelector("#System");
+  appendMessage(systemMessageContainer, message, timestamp);
+});
 
-    const entry = document.createElement('div');
-        
-    const messageSpan = document.createElement('span')
-    messageSpan.innerText = message 
+socket.on(socketCalls.CHAT_MESSAGE_RECEIVED, ({ message, timestamp }) => {
+  const systemMessageContainer = document.querySelector("#chat-log");
+  appendMessage(systemMessageContainer, message, timestamp);
+});
 
-    const timeStampSpan = document.createElement('span')
-    const date = " " + new Date(timestamp).toLocaleString()
-    timeStampSpan.innerText= date
-    timeStampSpan.style.fontSize = "9pt";
-    
-    entry.append(messageSpan, timeStampSpan)
-    entry.setAttribute('class', 'game-message')
+function appendMessage(messageContainer, message, timestamp) {
+  const entry = document.createElement("div");
 
-    systemMessageContainer.appendChild(entry)
-    systemMessageContainer.lastChild.scrollIntoView();
-})
+  const messageSpan = document.createElement("span");
+  messageSpan.classList.add("message");
+  messageSpan.innerText = message;
+
+  const timeStampSpan = document.createElement("span");
+  timeStampSpan.classList.add("timestamp");
+  const date = " " + new Date(timestamp).toLocaleString();
+  timeStampSpan.innerText = date;
+
+  entry.append(messageSpan, timeStampSpan);
+  entry.setAttribute("class", "game-message");
+
+  messageContainer.appendChild(entry);
+  messageContainer.lastChild.scrollIntoView();
+}
 
 socket.on(socketCalls.PLAYER_JOINED_RECEIVED, ({username})=>{
     const playersContainer = document.querySelector('#Lobby')

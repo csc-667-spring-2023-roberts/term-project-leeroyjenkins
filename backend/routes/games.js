@@ -436,7 +436,7 @@ const handleGameEnd = async(req, res) =>{
         io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: message, timestamp: Date.now()})
         io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_START_GAME,{})
 
-        res.status(200).json({message:'Success'})
+        // res.status(200).json({message:'Success'})
     }catch(err){
         console.log(err)
         res.status(500).json({message: "Internal Server Error", error: err})

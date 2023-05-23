@@ -22,26 +22,19 @@ router.post('/createTable', async(req, res, next)=>{
                 message: 'Name is in use',
             });
         }else{
-            try{
-                const count = 1;
-                const playerArray = [req.session.user.username]
-                const tableID = await game_table.createTable(min, max, tname, plimit, count, playerArray)
-                try{
-                    console.log("userid: " + userID)
-                    console.log("tableID: " + tableID.id)
-                    await player_table.joinPlayerTable(userID, tableID.id, count)
-                    io.emit(socketCalls.TABLE_UPDATE, {tableID: tableID, min: min, max:max, tname: tname, plimit: plimit,count: count})
-                    res.redirect(`/games/${tableID.id}`)
-                }catch(error){
-                    console.log('*player_table.joinPlayerTable*\n' + error)
-                    res.send('*player_table.joinPlayerTable*\n' + error)
-                }
-            }catch(err){
-                console.log(err)
-            }
+            const count = 1;
+            const playerArray = [req.session.user.username]
+            const tableID = await game_table.createTable(min, max, tname, plimit, count, playerArray)
+
+            console.log("userid: " + userID)
+            console.log("tableID: " + tableID.id)
+            await player_table.joinPlayerTable(userID, tableID.id, count)
+            io.emit(socketCalls.TABLE_UPDATE, {tableID: tableID, min: min, max:max, tname: tname, plimit: plimit,count: count})
+            res.redirect(`/games/${tableID.id}`)
         }
     }catch(err){
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 })
 
@@ -165,6 +158,7 @@ router.get('/:gameID', async(req, res) =>{
         }
     }catch(err){
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 })
 
@@ -211,6 +205,7 @@ router.post('/:gameID', async (req,res)=>{
         }
     }catch(error){
         console.log(error)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 })
 
@@ -262,6 +257,7 @@ router.post('/:gameID/create', async(req, res)=>{
     }catch(err){
         console.log("*Create Game* caught game_table.getData error")
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 })
 
@@ -331,11 +327,12 @@ router.post('/:gameID/bet', async(req, res)=>{
             }
         }else{
             console.log('insufficient funds')
+            res.status(400).json({message: "Not Acceptable, Player has Insufficient Funds"})
         }
     }catch(err){
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
-
 })
 
 const startNewRound = async(req,res) =>{
@@ -389,6 +386,7 @@ const startNewRound = async(req,res) =>{
         }
     }catch(err){
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 }
 
@@ -438,9 +436,10 @@ const handleGameEnd = async(req, res) =>{
         io.to(`game-${gameID}`).emit(socketCalls.SYSTEM_MESSAGE_RECEIVED,{message: message, timestamp: Date.now()})
         io.to(`game-${gameID}-${nextSeat}`).emit(socketCalls.ACTION_START_GAME,{})
 
-        res.status(200).json({message:'Success'})
+        // res.status(200).json({message:'Success'})
     }catch(err){
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 }
 
@@ -494,6 +493,7 @@ const playerFOLDS = async(req, res) =>{
 
     }catch(err){
         console.log(err)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 }
 
@@ -525,6 +525,7 @@ router.post('/:gameID/leave', async (req, res)=>{
         res.redirect('/home')
     }catch(error){
         console.log(error)
+        res.status(500).json({message: "Internal Server Error", error: err})
     }
 })
 
